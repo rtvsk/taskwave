@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import { SignIn } from './pages/SignIn';
+import { Page404 } from './pages/Page404';
+import { SignUp } from './pages/SignUp';
+import { Tasks } from './pages/Tasks';
 
-export default App;
+export const App = () => {
+    return (
+        <React.Fragment>
+            <Router>
+                <Switch>
+                    <Route path='/sign-in'>
+                        <SignIn />
+                    </Route>
+                    <Route path='/sign-up'>
+                        <SignUp />
+                    </Route>
+                    <Route path='/tasks'>
+                        <Tasks />
+                    </Route>
+                    <Route path='*'>
+                        <Page404 />
+                    </Route>
+                </Switch>
+            </Router>
+            <ToastContainer />
+        </React.Fragment>
+    );
+};

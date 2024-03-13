@@ -1,0 +1,9 @@
+{
+  "singleQuote": true,
+  "parser": "typescript",
+  "bracketSpacing": true,
+  "tabWidth": 4,
+  "trailingComma": "es5",
+  "jsxBracketSameLine": false,
+  "jsxSingleQuote": true
+}
