@@ -37,16 +37,16 @@ class UsersService:
         return entity is not None
 
     async def create(self, user_data: CreateUser):
-        if await self.check_exists_by_field("username", user_data.username):
-            raise UserAlreadyExists("User with this username already exists!")
+        if await self.check_exists_by_field("login", user_data.login):
+            raise UserAlreadyExists("User with this login already exists!")
 
         if await self.check_exists_by_field("email", user_data.email):
             raise UserAlreadyExists("User with this email already exists!")
 
         user = self.model(
-            name=user_data.name,
-            surname=user_data.surname,
-            username=user_data.username,
+            firstname=user_data.firstname,
+            lastname=user_data.lastname,
+            login=user_data.login,
             email=user_data.email,
             hashed_password=pwd_context.hash(user_data.password),
         )
@@ -76,9 +76,9 @@ class UsersService:
             .values(updated_user_params)
             .returning(
                 self.model.id,
-                self.model.username,
-                self.model.name,
-                self.model.surname,
+                self.model.login,
+                self.model.firstname,
+                self.model.lastname,
                 self.model.email,
             )
         )
@@ -98,7 +98,7 @@ class UsersService:
             update(self.model)
             .where(self.model.id == current_user.id)
             .values(is_active=False)
-            .returning(self.model.id, self.model.username)
+            .returning(self.model.id, self.model.login)
         )
 
         result = await self.session.execute(query)

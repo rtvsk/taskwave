@@ -9,21 +9,21 @@ async def test_register(
     get_entity_from_db,
 ):
     user_data = {
-        "name": "John",
-        "surname": "Doe",
-        "username": "john_doe",
+        "firstname": "John",
+        "lastname": "Doe",
+        "login": "john_doe",
         "email": "john.doe@example.com",
         "password": "password123",
     }
 
-    response = await ac.post("/users/register", json=user_data)
-    user = await get_entity_from_db(Users, "username", user_data["username"])
+    response = await ac.post("/users/singup", json=user_data)
+    user = await get_entity_from_db(Users, "login", user_data["login"])
     assert response.status_code == 201
     created_user = response.json()
 
-    assert created_user["name"] == user_data["name"]
-    assert created_user["surname"] == user_data["surname"]
-    assert created_user["username"] == user_data["username"]
+    assert created_user["firstname"] == user_data["firstname"]
+    assert created_user["lastname"] == user_data["lastname"]
+    assert created_user["login"] == user_data["login"]
     assert created_user["email"] == user_data["email"]
     assert user is not None
 
@@ -34,15 +34,15 @@ async def test_duplicate_email_exception(
     get_entity_from_db,
 ):
     user_data = {
-        "name": "John",
-        "surname": "Doe",
-        "username": "johndoe",
+        "firstname": "John",
+        "lastname": "Doe",
+        "login": "johndoe",
         "email": "john.doe@example.com",
         "password": "password123",
     }
 
-    response = await ac.post("/users/register", json=user_data)
-    user = await get_entity_from_db(Users, "username", user_data["username"])
+    response = await ac.post("/users/singup", json=user_data)
+    user = await get_entity_from_db(Users, "login", user_data["login"])
 
     assert response.status_code == 400
     assert "User with this email already exists!" in response.json()["detail"]
@@ -50,23 +50,23 @@ async def test_duplicate_email_exception(
 
 
 @pytest.mark.anyio
-async def test_duplicate_username_exception(
+async def test_duplicate_login_exception(
     ac: AsyncClient,
     get_entity_from_db,
 ):
     user_data = {
-        "name": "John",
-        "surname": "Doe",
-        "username": "john_doe",
+        "firstname": "John",
+        "lastname": "Doe",
+        "login": "john_doe",
         "email": "johndoe@example.com",
         "password": "password123",
     }
 
-    response = await ac.post("/users/register", json=user_data)
+    response = await ac.post("/users/singup", json=user_data)
     user = await get_entity_from_db(Users, "email", user_data["email"])
 
     assert response.status_code == 400
-    assert "User with this username already exists!" in response.json()["detail"]
+    assert "User with this login already exists!" in response.json()["detail"]
     assert user is None
 
 
@@ -75,11 +75,11 @@ async def test_login(
     ac: AsyncClient,
 ):
     user_data = {
-        "username": "john_doe",
+        "login": "john_doe",
         "password": "password123",
     }
 
-    response = await ac.post("/auth/login", data=user_data)
+    response = await ac.post("/auth/signin", data=user_data)
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert response.json()["token_type"] == "bearer"
@@ -90,13 +90,13 @@ async def test_unauth_exeption(
     ac: AsyncClient,
 ):
     user_data = {
-        "username": "johndoe",
+        "login": "johndoe",
         "password": "password123",
     }
 
-    response = await ac.post("/auth/login", data=user_data)
+    response = await ac.post("/auth/signin", data=user_data)
     assert response.status_code == 401
-    assert "Incorrect username or password" in response.json()["detail"]
+    assert "Incorrect login or password" in response.json()["detail"]
 
 
 @pytest.mark.anyio
@@ -105,9 +105,9 @@ async def test_read_user(
     created_test_access_token,
 ):
     user_data = {
-        "name": "John",
-        "surname": "Doe",
-        "username": "john_doe",
+        "firstname": "John",
+        "lastname": "Doe",
+        "login": "john_doe",
         "email": "john.doe@example.com",
         "password": "password123",
     }
@@ -117,9 +117,9 @@ async def test_read_user(
 
     assert response.status_code == 200
     read_user = response.json()
-    assert read_user["name"] == user_data["name"]
-    assert read_user["surname"] == user_data["surname"]
-    assert read_user["username"] == user_data["username"]
+    assert read_user["firstname"] == user_data["firstname"]
+    assert read_user["lastname"] == user_data["lastname"]
+    assert read_user["login"] == user_data["login"]
     assert read_user["email"] == user_data["email"]
 
 
@@ -131,8 +131,8 @@ async def test_edit_user(
     headers = created_test_access_token
 
     user_data = {
-        "name": "JohnJohn",
-        "surname": "DoeDoe",
+        "firstname": "JohnJohn",
+        "lastname": "DoeDoe",
         "email": "john.doe@example.com",
     }
 
@@ -140,8 +140,8 @@ async def test_edit_user(
 
     assert response.status_code == 200
     updated_user = response.json()
-    assert updated_user["name"] == user_data["name"]
-    assert updated_user["surname"] == user_data["surname"]
+    assert updated_user["firstname"] == user_data["firstname"]
+    assert updated_user["lastname"] == user_data["lastname"]
     assert updated_user["email"] == user_data["email"]
 
 
@@ -172,7 +172,7 @@ async def test_delete_user(
     headers = created_test_access_token
 
     response = await ac.delete("/users", headers=headers)
-    user = await get_entity_from_db(Users, "username", "john_doe")
+    user = await get_entity_from_db(Users, "login", "john_doe")
 
     assert response.status_code == 200
     assert user.is_active == False

@@ -13,7 +13,25 @@ users_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @users_router.post(
-    "/register", status_code=status.HTTP_201_CREATED, response_model=ShowUser
+    "/singup",
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        201: {"model": ShowUser},
+        400: {
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "User with this login or email already exists"
+                    }
+                }
+            },
+        },
+        422: {
+            "content": {
+                "application/json": {"example": {"detail": "Validation error mesage"}}
+            },
+        },
+    },
 )
 async def create_user(
     new_user: CreateUser,
@@ -25,14 +43,47 @@ async def create_user(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{ex}")
 
 
-@users_router.get("/me", response_model=ShowUser)
+@users_router.get(
+    "/me",
+    responses={
+        200: {"model": ShowUser},
+        401: {
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Could not validate credentials"}
+                }
+            }
+        },
+    },
+)
 async def read_user(
     current_user: Users = Depends(get_current_user_from_token),
 ):
     return current_user
 
 
-@users_router.patch("/edit", status_code=status.HTTP_200_OK, response_model=ShowUser)
+@users_router.patch(
+    "/edit",
+    responses={
+        200: {"model": ShowUser},
+        400: {
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "At least one parameter for user update info should be provided"
+                    }
+                }
+            }
+        },
+        401: {
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Could not validate credentials"}
+                }
+            }
+        },
+    },
+)
 async def edit_user(
     user_data: UpdateUser,
     current_user: Users = Depends(get_current_user_from_token),

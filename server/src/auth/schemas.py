@@ -7,4 +7,9 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str | None = None
+    login: str | None = None
+
+
+class LoginForm(BaseModel):
+    login: str
+    password: str

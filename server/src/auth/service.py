@@ -17,9 +17,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-async def get_user_by_username(username: str, session: AsyncSession):
+async def get_user_by_login(login: str, session: AsyncSession):
     user_data = await session.execute(
-        select(Users).where(and_(Users.username == username, Users.is_active))
+        select(Users).where(and_(Users.login == login, Users.is_active))
     )
     user = user_data.scalar_one_or_none()
     return user
@@ -29,8 +29,8 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 
-async def authentificate_user(username: str, password: str, session: AsyncSession):
-    user = await get_user_by_username(username=username, session=session)
+async def authentificate_user(login: str, password: str, session: AsyncSession):
+    user = await get_user_by_login(login=login, session=session)
     if not user:
         return
 
@@ -61,13 +61,13 @@ async def get_current_user_from_token(
     )
     try:
         playload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = playload.get("sub")
-        if username is None:
+        login: str = playload.get("sub")
+        if login is None:
             raise credentials_exception
     except JWTError as e:
         raise credentials_exception
 
-    user = await get_user_by_username(username=username, session=session)
+    user = await get_user_by_login(login=login, session=session)
     if user is None:
         raise credentials_exception
     return user

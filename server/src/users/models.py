@@ -17,9 +17,9 @@ class Users(Base):
         nullable=False,
         unique=True,
     )
-    name = Column(String, nullable=False)
-    surname = Column(String, nullable=False)
-    username = Column(String, nullable=False)
+    firstname = Column(String, nullable=False)
+    lastname = Column(String, nullable=False)
+    login = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     is_active = Column(Boolean(), default=True)
     hashed_password = Column(String, nullable=False)
