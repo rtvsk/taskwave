@@ -52,22 +52,23 @@ export const SignUp = () => {
             event.preventDefault();
             const data = new FormData(event.currentTarget);
             const signinData = {
-                name: data.get('name'),
-                surname: data.get('surname'),
-                username: data.get('username'),
+                firstname: data.get('firstname'),
+                lastname: data.get('lastname'),
+                login: data.get('login'),
                 email: data.get('email'),
                 password: data.get('password'),
             };
-            // eslint-disable-next-line no-console
-            console.log(signinData);
 
             try {
-                await api.post('/users/register', signinData);
+                await api.post('/users/singup', signinData);
                 toast(
-                    `Успешно! Теперь вы можете войти в приложение под ником: ${signinData.username}`,
+                    'Успешно! Теперь вы можете войти в приложение ' +
+                        'под ником: ' +
+                        signinData.login,
                     {
                         type: 'success',
                         autoClose: 2000,
+                        position: 'bottom-right',
                     }
                 );
                 history.push('/sign-in');
@@ -75,6 +76,7 @@ export const SignUp = () => {
                 toast('Registration Error', {
                     type: 'error',
                     autoClose: 2000,
+                    position: 'bottom-right',
                 });
             }
             // dispatch(userSignIn({ ...signinData, history }));
@@ -114,29 +116,29 @@ export const SignUp = () => {
                             margin='normal'
                             required
                             fullWidth
-                            id='name'
+                            id='firstname'
                             label='Firstname'
-                            name='name'
-                            autoComplete='name'
+                            name='firstname'
+                            autoComplete='firstname'
                             autoFocus
                         />
                         <TextField
                             margin='normal'
                             required
                             fullWidth
-                            id='surname'
+                            id='lastname'
                             label='Lastname'
-                            name='surname'
-                            autoComplete='surname'
+                            name='lastname'
+                            autoComplete='lastname'
                         />
                         <TextField
                             margin='normal'
                             required
                             fullWidth
-                            id='username'
-                            label='Username'
-                            name='username'
-                            autoComplete='username'
+                            id='login'
+                            label='Login'
+                            name='login'
+                            autoComplete='login'
                         />
                         <TextField
                             margin='normal'
@@ -169,7 +171,7 @@ export const SignUp = () => {
                             variant='contained'
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Войти
+                            Зарегистрироваться
                         </Button>
                         <Grid container>
                             <Grid item xs>
@@ -182,11 +184,7 @@ export const SignUp = () => {
                                     href='/sign-up'
                                     variant='body2'
                                     component={LinkBehavior}
-                                    onClick={() => {
-                                        // dispatch(setRegistered(false));
-                                        // eslint-disable-next-line no-console
-                                        console.log('clicked');
-                                    }}
+                                    onClick={() => {}}
                                 >
                                     {'Зарегистрироваться'}
                                 </Link>

@@ -1,19 +1,13 @@
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
-import { isAuthedSelector } from '../slices/selectors';
+import { globalIsLoadingSelector } from '../slices/global/selectors';
+import { Spinner } from '../components/spinner/Spinner';
 
 export const Tasks = () => {
-    const isAuthed = useSelector(isAuthedSelector);
-    const history = useHistory();
+    const isLoadingGlobal = useSelector(globalIsLoadingSelector);
 
-    if (!isAuthed) {
-        // eslint-disable-next-line no-console
-        console.log('<Tasks/> not authed, redirect to sign-in');
-
-        history.push('/sign-in');
-
-        return;
+    if (isLoadingGlobal) {
+        return <Spinner />;
     }
 
     return (

@@ -1,9 +1,13 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 
-import userReducer from './slices/userSlice';
+import userReducer from './slices/user/userSlice';
+import globalReducer from './slices/global/globalSlice';
+import taskGroupReducer from './slices/taskGroup/taskGroupSlice';
 
 const rootReducer = combineReducers({
     user: userReducer,
+    global: globalReducer,
+    taskGroup: taskGroupReducer,
 });
 
 export const store = configureStore({

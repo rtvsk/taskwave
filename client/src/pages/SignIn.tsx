@@ -12,12 +12,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { ThemeProvider } from '@mui/material/styles';
-import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import { LinkBehavior } from '../components/LinkBehavior';
 import { theme } from '../theme/theme';
-import { api } from '../requests/requests';
+import { signin } from '../components/actions/signin';
 
 function Copyright(props: any) {
     return (
@@ -44,7 +44,7 @@ export const SignIn = () => {
     // const { isAuthed, id: userId } = useSelector(
     //     (state: RootState) => state.user
     // );
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
     const history = useHistory();
 
@@ -53,25 +53,36 @@ export const SignIn = () => {
             event.preventDefault();
             const data = new FormData(event.currentTarget);
             const signinData = {
-                username: data.get('username'),
-                password: data.get('password'),
+                login: String(data.get('login')),
+                password: String(data.get('password')),
             };
-            // eslint-disable-next-line no-console
-            console.log(signinData);
+            dispatch(signin({ ...signinData, history }) as any);
 
-            try {
-                await api.post('/auth/login', signinData);
-                toast(`Успешно!`, {
-                    type: 'success',
-                    autoClose: 2000,
-                });
-                history.push('/tasks');
-            } catch (err) {
-                toast('Логин/пароль неверные', {
-                    type: 'error',
-                    autoClose: 2000,
-                });
-            }
+            // try {
+            //     const {
+            //         data: { access_token },
+            //     } = await api.post<SigninResponse>('/auth/signin', signinData);
+            //     const {
+            //         data: { login },
+            //     } = await api.get<MeResponse>('/users/me', {
+            //         headers: { Authorization: `Bearer ${access_token}` },
+            //     });
+            //     dispatch(setAuth(true));
+            //     dispatch(setLogin(login));
+            //     localStorage.setItem('reminderToken', access_token);
+            //     toast(`Успешно!`, {
+            //         type: 'success',
+            //         autoClose: 2000,
+            //         position: 'bottom-right',
+            //     });
+            //     history.push('/tasks');
+            // } catch (err) {
+            //     toast('Логин/пароль неверные', {
+            //         type: 'error',
+            //         autoClose: 2000,
+            //         position: 'bottom-right',
+            //     });
+            // }
             // dispatch(userSignIn({ ...signinData, history }));
         },
         []
@@ -105,10 +116,10 @@ export const SignIn = () => {
                             margin='normal'
                             required
                             fullWidth
-                            id='username'
-                            label='Username'
-                            name='username'
-                            autoComplete='username'
+                            id='login'
+                            label='Login'
+                            name='login'
+                            autoComplete='login'
                             autoFocus
                         />
                         <TextField
@@ -146,11 +157,7 @@ export const SignIn = () => {
                                     href='/sign-up'
                                     variant='body2'
                                     component={LinkBehavior}
-                                    onClick={() => {
-                                        // dispatch(setRegistered(false));
-                                        // eslint-disable-next-line no-console
-                                        console.log('clicked');
-                                    }}
+                                    onClick={() => {}}
                                 >
                                     {'Зарегистрироваться'}
                                 </Link>
