@@ -76,9 +76,9 @@ async def create_test_tasks_group_in_db(): ...
 async def create_test_user_in_db():
     async with async_session_maker() as session:
         user = Users(
-            name="test_name",
-            surname="test_surname",
-            username="test_username",
+            firstname="test_firstname",
+            lastname="test_lastname",
+            login="test_login",
             email="test_email@test.test",
             hashed_password=pwd_context.hash("passwordtest1"),
         )
@@ -124,7 +124,9 @@ async def get_entity_from_db(ac: AsyncClient, get_db):
     return _get_entity_from_db
 
 
-UserData = namedtuple("UserData", ["name", "surname", "username", "email", "password"])
+UserData = namedtuple(
+    "UserData", ["firstname", "lastname", "login", "email", "password"]
+)
 
 
 @pytest.fixture

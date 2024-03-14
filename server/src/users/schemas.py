@@ -8,33 +8,33 @@ from fastapi import HTTPException, status
 
 
 class CreateUser(BaseModel):
-    name: str
-    surname: str
-    username: str
+    firstname: str
+    lastname: str
+    login: str
     email: EmailStr
     password: str
 
-    @field_validator("name")
-    def validate_name(cls, value):
+    @field_validator("firstname")
+    def validate_firstname(cls, value):
         if not re.compile(r"^[а-яА-Яa-zA-Z\-]+$").match(value):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Name should contains only letters",
+                detail="Firstname should contains only letters",
             )
         return value
 
-    @field_validator("username")
-    def validate_username(cls, value):
+    @field_validator("login")
+    def validate_login(cls, value):
         if len(value) < 4:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Username must be at least 4 characters long",
+                detail="Login must be at least 4 characters long",
             )
 
         if not re.search(r"[а-яА-Яa-zA-Z]", value):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Username  must contains at least one letter",
+                detail="Login  must contains at least one letter",
             )
         return value
 
@@ -56,9 +56,9 @@ class CreateUser(BaseModel):
 
 class ShowUser(BaseModel):
     id: uuid.UUID
-    username: str
-    name: str
-    surname: str
+    login: str
+    firstname: str
+    lastname: str
     email: EmailStr
 
     class Config:
@@ -66,28 +66,28 @@ class ShowUser(BaseModel):
 
 
 class UpdateUser(BaseModel):
-    name: str | None = None
-    surname: str | None = None
+    firstname: str | None = None
+    lastname: str | None = None
     email: EmailStr | None = None
 
-    @field_validator("name")
-    def validate_name(cls, value):
+    @field_validator("firstname")
+    def validate_firstname(cls, value):
         if not re.compile(r"^[а-яА-Яa-zA-Z\-]+$").match(value):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Name should contains only letters",
+                detail="Firstname should contains only letters",
             )
         return value
 
-    @field_validator("surname")
-    def validate_surname(cls, value):
+    @field_validator("lastname")
+    def validate_lastname(cls, value):
         if not re.compile(r"^[а-яА-Яa-zA-Z\-]+$").match(value):
             raise HTTPException(
-                status_code=422, detail="Surname should contains only letters"
+                status_code=422, detail="Lastname should contains only letters"
             )
         return value
 
 
 class DeletedUser(BaseModel):
     id: uuid.UUID
-    username: str
+    login: str
