@@ -37,14 +37,7 @@ function Copyright(props: any) {
     );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-// const defaultTheme = createTheme();
-
 export const SignUp = () => {
-    // const { isAuthed, id: userId } = useSelector(
-    //     (state: RootState) => state.user
-    // );
-    // const dispatch = useDispatch();
     const history = useHistory();
 
     const handleSubmit = React.useCallback(
@@ -79,14 +72,9 @@ export const SignUp = () => {
                     position: 'bottom-right',
                 });
             }
-            // dispatch(userSignIn({ ...signinData, history }));
         },
         []
     );
-
-    // if (isAuthed) {
-    //     return null;
-    // }
 
     return (
         <ThemeProvider theme={theme}>

@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 
 import { LinkBehavior } from '../components/LinkBehavior';
 import { theme } from '../theme/theme';
-import { signin } from '../components/actions/signin';
+import { signin } from '../actions/signin';
 
 function Copyright(props: any) {
     return (
@@ -28,7 +28,7 @@ function Copyright(props: any) {
             {...props}
         >
             {'Copyright © '}
-            <Link color='inherit' href='https://mui.com/'>
+            <Link color='inherit' href='https://reminder.su/'>
                 Reminder.su
             </Link>{' '}
             {new Date().getFullYear()}
@@ -37,13 +37,7 @@ function Copyright(props: any) {
     );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-// const defaultTheme = createTheme();
-
 export const SignIn = () => {
-    // const { isAuthed, id: userId } = useSelector(
-    //     (state: RootState) => state.user
-    // );
     const dispatch = useDispatch();
 
     const history = useHistory();
@@ -57,33 +51,6 @@ export const SignIn = () => {
                 password: String(data.get('password')),
             };
             dispatch(signin({ ...signinData, history }) as any);
-
-            // try {
-            //     const {
-            //         data: { access_token },
-            //     } = await api.post<SigninResponse>('/auth/signin', signinData);
-            //     const {
-            //         data: { login },
-            //     } = await api.get<MeResponse>('/users/me', {
-            //         headers: { Authorization: `Bearer ${access_token}` },
-            //     });
-            //     dispatch(setAuth(true));
-            //     dispatch(setLogin(login));
-            //     localStorage.setItem('reminderToken', access_token);
-            //     toast(`Успешно!`, {
-            //         type: 'success',
-            //         autoClose: 2000,
-            //         position: 'bottom-right',
-            //     });
-            //     history.push('/tasks');
-            // } catch (err) {
-            //     toast('Логин/пароль неверные', {
-            //         type: 'error',
-            //         autoClose: 2000,
-            //         position: 'bottom-right',
-            //     });
-            // }
-            // dispatch(userSignIn({ ...signinData, history }));
         },
         []
     );

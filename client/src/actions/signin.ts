@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-import { api } from '../../requests/requests';
-import { MeResponse, SigninResponse } from '../../types';
-import { userActions } from '../../slices/user/userSlice';
+import { api } from '../requests/requests';
+import { MeResponse, SigninResponse } from '../types';
+import { userActions } from '../slices/user/userSlice';
+import { Token, getGreetingByTime } from '../helpers/helpers';
 
 export const signin = createAsyncThunk<
     void,
@@ -23,8 +24,8 @@ export const signin = createAsyncThunk<
         });
         dispatch(setAuth(true));
         dispatch(setLogin(login));
-        localStorage.setItem('reminderToken', access_token);
-        toast(`Успешно!`, {
+        Token.set(access_token);
+        toast(getGreetingByTime(), {
             type: 'success',
             autoClose: 2000,
             position: 'bottom-right',

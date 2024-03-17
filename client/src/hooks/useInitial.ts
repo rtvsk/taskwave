@@ -6,6 +6,7 @@ import { userActions } from '../slices/user/userSlice';
 import { globalActions } from '../slices/global/globalSlice';
 import { api } from '../requests/requests';
 import { MeResponse } from '../types';
+import { Token } from '../helpers/helpers';
 
 export const useInitial = () => {
     const history = useHistory();
@@ -25,7 +26,7 @@ export const useInitial = () => {
         const checkWhoAmI = async () => {
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            const token = localStorage.getItem('reminderToken');
+            const token = Token.get();
 
             if (!token) {
                 resetUserAndGoSignin();
@@ -51,7 +52,7 @@ export const useInitial = () => {
                 dispatch(setLogin(null));
                 dispatch(setIsLoading(false));
                 history.push('/sign-in');
-                localStorage.removeItem('reminderToken');
+                Token.delete();
             }
         };
 

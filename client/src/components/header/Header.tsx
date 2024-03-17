@@ -1,4 +1,4 @@
-import { Avatar, Box, IconButton, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMemo } from 'react';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 import { isAuthedSelector, loginSelector } from '../../slices/user/selectors';
 import { userActions } from '../../slices/user/userSlice';
+import { Token } from '../../helpers/helpers';
 
 export const Header = () => {
     const isAuthed = useSelector(isAuthedSelector);
@@ -19,7 +20,7 @@ export const Header = () => {
         history.push('/sign-in');
         dispatch(setAuth(false));
         dispatch(setLogin(null));
-        localStorage.removeItem('reminderToken');
+        Token.delete();
         toast(`Вы вышли из приложения`, {
             type: 'info',
             autoClose: 2000,
@@ -34,10 +35,7 @@ export const Header = () => {
 
         return (
             <>
-                <Avatar sx={{ width: 24, height: 24 }}>
-                    {login.charAt(0)}
-                </Avatar>
-                <Typography component='h1' variant='h6'>
+                <Typography component='span' variant='subtitle1'>
                     {login}
                 </Typography>
                 <IconButton size='small' onClick={onLogout}>

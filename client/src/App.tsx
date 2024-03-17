@@ -6,11 +6,12 @@ import { useSelector } from 'react-redux';
 import { SignIn } from './pages/SignIn';
 import { Page404 } from './pages/Page404';
 import { SignUp } from './pages/SignUp';
-import { Tasks } from './pages/Tasks';
+import { TaskGroups } from './pages/TaskGroups';
 import { Header } from './components/header/Header';
 import { Spinner } from './components/spinner/Spinner';
 import { globalIsLoadingSelector } from './slices/global/selectors';
 import { useInitial } from './hooks/useInitial';
+import { TaskGroupModals } from './components/modals';
 
 export const App = withRouter(() => {
     const isLoading = useSelector(globalIsLoadingSelector);
@@ -32,13 +33,14 @@ export const App = withRouter(() => {
                     <SignUp />
                 </Route>
                 <Route path='/tasks'>
-                    <Tasks />
+                    <TaskGroups />
                 </Route>
                 <Route path='*'>
                     <Page404 />
                 </Route>
             </Switch>
             <ToastContainer />
+            <TaskGroupModals />
         </React.Fragment>
     );
 });
