@@ -53,11 +53,11 @@ export const SignUp = () => {
             };
 
             try {
-                await api.post('/users/singup', signinData);
+                await api.post('/users/signup', signinData);
                 toast(
                     'Успешно! Теперь вы можете войти в приложение ' +
-                        'под ником: ' +
-                        signinData.login,
+                    'под ником: ' +
+                    signinData.login,
                     {
                         type: 'success',
                         autoClose: 2000,
@@ -172,7 +172,7 @@ export const SignUp = () => {
                                     href='/sign-up'
                                     variant='body2'
                                     component={LinkBehavior}
-                                    onClick={() => {}}
+                                    onClick={() => { }}
                                 >
                                     {'Зарегистрироваться'}
                                 </Link>

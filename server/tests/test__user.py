@@ -16,7 +16,7 @@ async def test_register(
         "password": "password123",
     }
 
-    response = await ac.post("/users/singup", json=user_data)
+    response = await ac.post("/users/signup", json=user_data)
     user = await get_entity_from_db(Users, "login", user_data["login"])
     assert response.status_code == 201
     created_user = response.json()
@@ -41,7 +41,7 @@ async def test_duplicate_email_exception(
         "password": "password123",
     }
 
-    response = await ac.post("/users/singup", json=user_data)
+    response = await ac.post("/users/signup", json=user_data)
     user = await get_entity_from_db(Users, "login", user_data["login"])
 
     assert response.status_code == 400
@@ -62,7 +62,7 @@ async def test_duplicate_login_exception(
         "password": "password123",
     }
 
-    response = await ac.post("/users/singup", json=user_data)
+    response = await ac.post("/users/signup", json=user_data)
     user = await get_entity_from_db(Users, "email", user_data["email"])
 
     assert response.status_code == 400
