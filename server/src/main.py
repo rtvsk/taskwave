@@ -17,6 +17,7 @@ app = FastAPI(title="Reminder")
 # Define origins that you want to allow
 origins = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 # Add middleware to handle CORS
@@ -28,10 +29,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router)
-app.include_router(users_router)
-app.include_router(tasks_group_router)
-app.include_router(tasks_router)
+routers = (
+    auth_router,
+    tasks_router,
+    tasks_group_router,
+    users_router,
+)
+for router in routers:
+    app.include_router(router, prefix="/api")
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
