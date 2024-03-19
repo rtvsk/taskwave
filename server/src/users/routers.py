@@ -13,7 +13,7 @@ users_router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @users_router.post(
-    "/singup",
+    "/signup",
     status_code=status.HTTP_201_CREATED,
     responses={
         201: {"model": ShowUser},
