@@ -1,10 +1,8 @@
 from uuid import UUID
 
-from src.exceptions import BadRequestException
+from src.util.repository import BaseRepository
 from src.tasks_group.schemas import CreateTasksGroup, UpdateTasksGroup
-from src.database_2.repository import BaseRepository
-from src.database_2.models import TasksGroup
-from src.database_2.exceptions import UnprocessableError
+from src.tasks_group.models import TasksGroup
 
 
 class TasksGroupService(BaseRepository):
@@ -31,12 +29,9 @@ class TasksGroupService(BaseRepository):
     async def update(self, tasks_group_id: UUID, tasks_group_data: UpdateTasksGroup):
         updated_task_group_params = tasks_group_data.model_dump(exclude_none=True)
 
-        try:
-            updated_tasks_group = await self._update(
-                "id", tasks_group_id, updated_task_group_params
-            )
-        except UnprocessableError as e:
-            raise BadRequestException(detail=f"{e}")
+        updated_tasks_group = await self._update(
+            "id", tasks_group_id, updated_task_group_params
+        )
 
         return updated_tasks_group
 

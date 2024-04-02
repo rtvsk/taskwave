@@ -16,6 +16,7 @@ class CreateUser(BaseModel):
             raise UnprocessableException(
                 detail="Login must be at least 4 characters long"
             )
+        return value
 
     @field_validator("password")
     def validate_password(cls, value):

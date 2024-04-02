@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from src.tasks.schemas import ShowTask, CreateTask, UpdateTask
 from src.tasks.service import TaskService
+from src.tasks.dependencies import get_task_service
 from src.tasks_group.dependencies import valid_owned_tasks
-from src.database_2.models import TasksGroup
+from src.tasks_group.models import TasksGroup
 
 tasks_router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -30,8 +31,11 @@ tasks_router = APIRouter(prefix="/tasks", tags=["Tasks"])
         },
     },
 )
-async def get_tasks(tasks_group: TasksGroup = Depends(valid_owned_tasks)):
-    return await TaskService().get_from_tasks_group(tasks_group_id=tasks_group.id)
+async def get_tasks(
+    tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    task_service: TaskService = Depends(get_task_service),
+):
+    return await task_service.get_from_tasks_group(tasks_group_id=tasks_group.id)
 
 
 @tasks_router.post(
@@ -62,11 +66,11 @@ async def get_tasks(tasks_group: TasksGroup = Depends(valid_owned_tasks)):
     },
 )
 async def create_task(
-    task_data: CreateTask, tasks_group: TasksGroup = Depends(valid_owned_tasks)
+    task_data: CreateTask,
+    tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    task_service: TaskService = Depends(get_task_service),
 ):
-    return await TaskService().create(
-        task_data=task_data, tasks_group_id=tasks_group.id
-    )
+    return await task_service.create(task_data=task_data, tasks_group_id=tasks_group.id)
 
 
 @tasks_router.patch(
@@ -111,8 +115,9 @@ async def edit_task(
     task_id: int,
     task_data: UpdateTask,
     tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    task_service: TaskService = Depends(get_task_service),
 ):
-    return await TaskService().update(task_data=task_data, task_id=task_id)
+    return await task_service.update(task_data=task_data, task_id=task_id)
 
 
 @tasks_router.delete(
@@ -139,6 +144,8 @@ async def edit_task(
     },
 )
 async def delete_task(
-    task_id: int, tasks_group: TasksGroup = Depends(valid_owned_tasks)
+    task_id: int,
+    tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    task_service: TaskService = Depends(get_task_service),
 ):
-    return await TaskService().delete(task_id=task_id)
+    return await task_service.delete(task_id=task_id)
