@@ -53,7 +53,7 @@ export const SignUp = () => {
             };
 
             try {
-                await api.post('/users/signup', signinData);
+                await api.post('api/users/signup', signinData);
                 toast(
                     'Успешно! Теперь вы можете войти в приложение ' +
                     'под ником: ' +

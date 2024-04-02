@@ -1,8 +1,5 @@
-import re
-
 from pydantic import BaseModel, field_validator
-from pydantic import validator
-from fastapi import HTTPException, status
+from src.exceptions import UnprocessableException
 
 
 class TaskBase(BaseModel):
@@ -12,11 +9,10 @@ class TaskBase(BaseModel):
     @field_validator("title")
     def validate_title(cls, value):
         if len(value) < 1:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            raise UnprocessableException(
                 detail="Title must contains at least one simbol"
             )
-        return value   
+        return value
 
 
 class ShowTask(TaskBase):
