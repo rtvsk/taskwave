@@ -1,73 +1,50 @@
 from uuid import UUID
 
-from sqlalchemy import select, update, and_
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from src.tasks.models import Task
+from src.exceptions import BadRequestException
 from src.tasks.schemas import CreateTask, UpdateTask
+from src.tasks.exceptions import TaskNotFound
+from src.database_2.repository import BaseRepository
+from src.database_2.models import Task
+from src.database_2.exceptions import UnprocessableError
 
 
-class TasksService:
+class TaskService(BaseRepository):
     model = Task
 
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    async def create(self, task_data: CreateTask, tasks_group_id: UUID):
+        task_dict = task_data.model_dump()
+        task_dict["tasks_group_id"] = tasks_group_id
 
-    async def get_by_id(self, entity_id: UUID):
-        result = await self.session.execute(
-            select(self.model).where(self.model.id == entity_id)
-        )
-        entity = result.fetchone()
-        if entity is not None:
-            return entity
+        task = await self._save(task_dict)
 
-    async def get_from_group(self, tasks_group_id: UUID):
-        get_tasks = await self.session.execute(
-            select(self.model).where(
-                and_(
-                    self.model.tasks_group_id == tasks_group_id,
-                    self.model.is_active,
-                )
-            )
-        )
-        tasks = get_tasks.fetchall()
-        return [task[0] for task in tasks]
-
-    async def create(self, tasks_group_id: UUID, task_data: CreateTask):
-        task = self.model(
-            title=task_data.title,
-            description=task_data.description,
-            tasks_group_id=tasks_group_id,
-        )
-
-        self.session.add(task)
-        await self.session.commit()
         return task
 
-    async def update(self, task_id: int, task_data: UpdateTask, tasks_group_id: UUID):
-        updated_params = task_data.model_dump(exclude_none=True)
-        if not updated_params:
-            raise ValueError(
-                "At least one parameter for user update info should be provided"
-            )
+    async def get_by_id(self, task_id: int):
+        task = await self._get_by_id(task_id)
 
-        query = (
-            update(self.model)
-            .where(
-                and_(
-                    self.model.id == task_id,
-                    self.model.tasks_group_id == tasks_group_id,
-                )
-            )
-            .values(updated_params)
-            .returning(
-                self.model.id,
-                self.model.title,
-                self.model.description,
-                self.model.is_done,
-            )
-        )
-        res = await self.session.execute(query)
-        await self.session.commit()
-        updated_task = res.fetchone()
+        return task
+
+    async def get_from_tasks_group(self, tasks_group_id: UUID):
+        tasks = await self._get_all_by_field("tasks_group_id", tasks_group_id)
+
+        return tasks
+
+    async def update(self, task_data: UpdateTask, task_id: int):
+        task = await self._get_by_id(task_id)
+        if not task:
+            raise TaskNotFound
+
+        updated_task_params = task_data.model_dump(exclude_none=True)
+        try:
+            updated_task = await self._update("id", task_id, updated_task_params)
+        except UnprocessableError as e:
+            raise BadRequestException(detail=f"{e}")
+
         return updated_task
+
+    async def delete(self, task_id: int) -> None:
+        task = await self._get_by_id(task_id)
+        if not task:
+            raise TaskNotFound
+
+        await self._delete(task_id)
