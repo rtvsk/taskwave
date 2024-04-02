@@ -1,11 +1,9 @@
 from uuid import UUID
 
-from src.exceptions import BadRequestException
+from src.util.repository import BaseRepository
+from src.tasks.models import Task
 from src.tasks.schemas import CreateTask, UpdateTask
 from src.tasks.exceptions import TaskNotFound
-from src.database_2.repository import BaseRepository
-from src.database_2.models import Task
-from src.database_2.exceptions import UnprocessableError
 
 
 class TaskService(BaseRepository):
@@ -35,10 +33,7 @@ class TaskService(BaseRepository):
             raise TaskNotFound
 
         updated_task_params = task_data.model_dump(exclude_none=True)
-        try:
-            updated_task = await self._update("id", task_id, updated_task_params)
-        except UnprocessableError as e:
-            raise BadRequestException(detail=f"{e}")
+        updated_task = await self._update("id", task_id, updated_task_params)
 
         return updated_task
 

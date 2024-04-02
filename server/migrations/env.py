@@ -11,13 +11,11 @@ import sys
 
 sys.path.append(os.path.join(sys.path[0], "src"))
 
-# from src.users.models import Users
-# from src.tasks_group.models import TasksGroup
-# from src.tasks.models import Task
+from src.users.models import User
+from src.tasks_group.models import TasksGroup
+from src.tasks.models import Task
 
-# from src.database import Base
-
-from src.database_2.models import Base
+from src.database import Base
 
 
 # this is the Alembic Config object, which provides

@@ -1,19 +1,35 @@
+from uuid import UUID
 from passlib.context import CryptContext
+from sqlalchemy import select, and_
 
-from src.exceptions import BadRequestException
-from src.users.schemas import CreateUser, UpdateUser
+from src.auth.schemas import CreateUser
+from src.users.models import User
+from src.users.schemas import UpdateUser
 from src.users.exceptions import UserAlreadyExists, UserNotFound
 
-from src.database_2.repository import BaseRepository
-from src.database_2.models import User
-from src.database_2.exceptions import UnprocessableError
+from src.util.repository import BaseRepository
 
 
 class UserService(BaseRepository):
-
     model = User
 
     _PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+    async def _get_by_id(self, user_id: UUID):
+        result = await self.session.execute(
+            select(self.model).where(
+                and_(self.model.id == user_id, self.model.is_active)
+            )
+        )
+        return result.scalar_one_or_none()
+
+    async def _get_by_field(self, key: str, value: str):
+        result = await self.session.execute(
+            select(self.model).where(
+                and_(getattr(self.model, key) == value, self.model.is_active)
+            )
+        )
+        return result.scalar_one_or_none()
 
     async def create(self, user_data: CreateUser):
         if await self._get_by_field("login", user_data.login):
@@ -36,10 +52,7 @@ class UserService(BaseRepository):
             raise UserNotFound
 
         updated_user_params = user_data.model_dump(exclude_none=True)
-        try:
-            updated_user = await self._update("id", user.id, updated_user_params)
-        except UnprocessableError as e:
-            raise BadRequestException(detail=f"{e}")
+        updated_user = await self._update("id", user.id, updated_user_params)
 
         return updated_user
 
@@ -48,11 +61,8 @@ class UserService(BaseRepository):
         if not user:
             raise UserNotFound
 
-        try:
-            deactivated_user = await self._update(
-                "id", current_user.id, {"is_active": False}
-            )
-        except UnprocessableError as e:
-            raise BadRequestException(detail=f"{e}")
+        deactivated_user = await self._update(
+            "id", current_user.id, {"is_active": False}
+        )
 
         return deactivated_user

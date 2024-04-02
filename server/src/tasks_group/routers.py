@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, status
 
 from src.auth.dependencies import get_current_user_from_token
+from src.tasks_group.models import TasksGroup
 from src.tasks_group.schemas import CreateTasksGroup, ShowTasksGroup, UpdateTasksGroup
 from src.tasks_group.service import TasksGroupService
-from src.tasks_group.dependencies import valid_owned_tasks
+from src.tasks_group.dependencies import valid_owned_tasks, get_tasks_group_service
+from src.users.models import User
 
-from src.database_2.models import User, TasksGroup
 
 tasks_group_router = APIRouter(prefix="/tasks", tags=["Tasks_group"])
 
@@ -26,8 +27,9 @@ tasks_group_router = APIRouter(prefix="/tasks", tags=["Tasks_group"])
 )
 async def users_tasks_group(
     current_user: User = Depends(get_current_user_from_token),
+    tasks_group_service: TasksGroupService = Depends(get_tasks_group_service),
 ):
-    return await TasksGroupService().get_all_from_user(author_id=current_user.id)
+    return await tasks_group_service.get_all_from_user(author_id=current_user.id)
 
 
 @tasks_group_router.post(
@@ -52,8 +54,9 @@ async def users_tasks_group(
 async def create_tasks_group(
     tasks_group_data: CreateTasksGroup,
     current_user: User = Depends(get_current_user_from_token),
+    tasks_group_service: TasksGroupService = Depends(get_tasks_group_service),
 ):
-    return await TasksGroupService().create(
+    return await tasks_group_service.create(
         tasks_group_data=tasks_group_data, author_id=current_user.id
     )
 
@@ -97,8 +100,9 @@ async def create_tasks_group(
 async def edit_tasks_group(
     tasks_group_data: UpdateTasksGroup,
     tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    tasks_group_service: TasksGroupService = Depends(get_tasks_group_service),
 ):
-    return await TasksGroupService().update(
+    return await tasks_group_service.update(
         tasks_group_id=tasks_group.id, tasks_group_data=tasks_group_data
     )
 
@@ -124,5 +128,8 @@ async def edit_tasks_group(
         },
     },
 )
-async def delete_tasks_group(tasks_group: TasksGroup = Depends(valid_owned_tasks)):
-    return await TasksGroupService().delete(tasks_group_id=tasks_group.id)
+async def delete_tasks_group(
+    tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    tasks_group_service: TasksGroupService = Depends(get_tasks_group_service),
+):
+    return await tasks_group_service.delete(tasks_group_id=tasks_group.id)

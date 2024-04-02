@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from src.auth.dependencies import get_current_user_from_token
+from src.users.dependencies import get_user_service
 from src.users.service import UserService
 from src.users.schemas import ShowUser, UpdateUser, DeletedUser
-from src.database_2.models import User
+from src.users.models import User
 
 
 users_router = APIRouter(prefix="/users", tags=["Users"])
@@ -56,9 +57,11 @@ async def read_user(current_user: User = Depends(get_current_user_from_token)):
     },
 )
 async def edit_user(
-    user_data: UpdateUser, current_user: User = Depends(get_current_user_from_token)
+    user_data: UpdateUser,
+    current_user: User = Depends(get_current_user_from_token),
+    user_service: UserService = Depends(get_user_service),
 ):
-    return await UserService().update(user_data=user_data, current_user=current_user)
+    return await user_service.update(user_data=user_data, current_user=current_user)
 
 
 @users_router.delete(
@@ -84,5 +87,8 @@ async def edit_user(
         },
     },
 )
-async def delete_user(current_user: User = Depends(get_current_user_from_token)):
-    return await UserService().deactivate(current_user=current_user)
+async def delete_user(
+    current_user: User = Depends(get_current_user_from_token),
+    user_service: UserService = Depends(get_user_service),
+):
+    return await user_service.deactivate(current_user=current_user)
