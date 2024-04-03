@@ -26,8 +26,8 @@ async def valid_tasks_group_id(
 
 
 async def valid_owned_tasks(
-    tasks_group: TasksGroup = Depends(valid_tasks_group_id),
     current_user: User = Depends(get_current_user_from_token),
+    tasks_group: TasksGroup = Depends(valid_tasks_group_id),
 ):
     if tasks_group.author_id != current_user.id:
         raise UserNotOwner
