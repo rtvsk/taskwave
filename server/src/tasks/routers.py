@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, status
 
 from src.tasks.schemas import ShowTask, CreateTask, UpdateTask
 from src.tasks.service import TaskService
-from src.tasks.dependencies import get_task_service
-from src.tasks_group.dependencies import valid_owned_tasks
+from src.tasks.models import Task
+from src.tasks.dependencies import get_task_service, valid_tasks_group
 from src.tasks_group.models import TasksGroup
+from src.tasks_group.dependencies import valid_owned_tasks
 
 tasks_router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -112,12 +113,11 @@ async def create_task(
     },
 )
 async def edit_task(
-    task_id: int,
     task_data: UpdateTask,
-    tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    task: Task = Depends(valid_tasks_group),
     task_service: TaskService = Depends(get_task_service),
 ):
-    return await task_service.update(task_data=task_data, task_id=task_id)
+    return await task_service.update(task_data=task_data, task_id=task.id)
 
 
 @tasks_router.delete(
@@ -144,8 +144,7 @@ async def edit_task(
     },
 )
 async def delete_task(
-    task_id: int,
-    tasks_group: TasksGroup = Depends(valid_owned_tasks),
+    task: Task = Depends(valid_tasks_group),
     task_service: TaskService = Depends(get_task_service),
 ):
-    return await task_service.delete(task_id=task_id)
+    return await task_service.delete(task_id=task.id)

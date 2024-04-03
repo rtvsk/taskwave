@@ -28,18 +28,10 @@ class TaskService(BaseRepository):
         return tasks
 
     async def update(self, task_data: UpdateTask, task_id: int):
-        task = await self._get_by_id(task_id)
-        if not task:
-            raise TaskNotFound
-
         updated_task_params = task_data.model_dump(exclude_none=True)
         updated_task = await self._update("id", task_id, updated_task_params)
 
         return updated_task
 
     async def delete(self, task_id: int) -> None:
-        task = await self._get_by_id(task_id)
-        if not task:
-            raise TaskNotFound
-
         await self._delete(task_id)
