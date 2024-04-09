@@ -47,7 +47,7 @@ class UserService(BaseRepository):
         return user
 
     async def update(self, user_data: UpdateUser, current_user: User):
-        user = await self._get_by_id(entity_id=current_user.id)
+        user = await self._get_by_id(current_user.id)
         if not user:
             raise UserNotFound
 
