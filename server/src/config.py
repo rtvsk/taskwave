@@ -16,6 +16,7 @@ DB_PORT_TEST = os.environ.get("DB_PORT_TEST")
 DB_NAME_TEST = os.environ.get("DB_NAME_TEST")
 DB_USER_TEST = os.environ.get("DB_USER_TEST")
 DB_PASS_TEST = os.environ.get("DB_PASS_TEST")
+DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}"
 
 ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES")
 SECRET_KEY = os.environ.get("SECRET_KEY")

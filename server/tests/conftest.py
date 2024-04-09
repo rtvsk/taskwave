@@ -1,10 +1,9 @@
-import asyncio
-from typing import AsyncGenerator
-from datetime import timedelta
-from collections import namedtuple
-from uuid import uuid4
-
 import pytest
+
+from datetime import timedelta
+from typing import AsyncGenerator
+from collections import namedtuple
+
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from sqlalchemy import select
@@ -14,21 +13,11 @@ from sqlalchemy.pool import NullPool
 
 from src.database import get_async_session
 from src.database import Base
-from src.auth.service import create_access_token
-from src.config import (
-    DB_HOST_TEST,
-    DB_NAME_TEST,
-    DB_PASS_TEST,
-    DB_PORT_TEST,
-    DB_USER_TEST,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-)
+from src.config import DATABASE_URL_TEST
 from src.main import app
-from src.users.models import Users
 
+from src.auth.jwt import create_access_token
 
-# DATABASE
-DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}"
 
 engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool, echo=True)
 async_session_maker = sessionmaker(
@@ -59,51 +48,55 @@ def anyio_backend():
     return "asyncio"
 
 
-client = TestClient(app)
-
-
-@pytest.fixture(scope="session")
-async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
-
-
-@pytest.fixture(scope="session")
-async def create_test_tasks_group_in_db(): ...
-
-
-@pytest.fixture(scope="session")
-async def create_test_user_in_db():
-    async with async_session_maker() as session:
-        user = Users(
-            firstname="test_firstname",
-            lastname="test_lastname",
-            login="test_login",
-            email="test_email@test.test",
-            hashed_password=pwd_context.hash("passwordtest1"),
-        )
-        session.add(user)
-        await session.commit()
-        yield user.id
-
-
-@pytest.fixture(scope="session")
+@pytest.fixture(autouse=True, scope="session")
 def created_test_access_token() -> dict[str:str]:
     access_token = create_access_token(
         data={"sub": "john_doe"},
-        expires_delta=timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES)),
+        expires_delta=timedelta(minutes=30),
     )
     return {"Authorization": f"Bearer {access_token}"}
 
 
-@pytest.fixture(scope="function")
+client = TestClient(app)
+
+
+@pytest.fixture(scope="session")
+async def api_client() -> AsyncGenerator[AsyncClient, None]:
+    async with AsyncClient(app=app, base_url="http://test") as api_client:
+        yield api_client
+
+
+UserSignupData = namedtuple("UserSignupData", ["login", "email", "password"])
+
+UserSigninData = namedtuple("UserSigninData", ["login", "password"])
+
+UserUpdateData = namedtuple("UserUpdateData", ["firstname", "lastname"])
+
+
+@pytest.fixture
+def john_doe_signup_data():
+    return UserSignupData("john_doe", "john.doe@example.com", "password123")
+
+
+@pytest.fixture
+def john_doe_signin_data():
+    return UserSigninData("john_doe", "password123")
+
+
+@pytest.fixture
+def john_doe_update_data():
+    return UserUpdateData("John", "Doe")
+
+
+##### THINK THINK THINK #####
+@pytest.fixture
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
 
 
 @pytest.fixture(scope="function")
-async def get_first_from_db(ac: AsyncClient, get_db):
+async def get_first_from_db(api_client: AsyncClient, get_db):
     async def _get_first_from_db(model):
         async with async_session_maker() as session:
             stmt = select(model).limit(1)
@@ -114,7 +107,7 @@ async def get_first_from_db(ac: AsyncClient, get_db):
 
 
 @pytest.fixture(scope="function")
-async def get_entity_from_db(ac: AsyncClient, get_db):
+async def get_entity_from_db(api_client: AsyncClient, get_db):
     async def _get_entity_from_db(model, field_name: str, field_value: str):
         async with async_session_maker() as session:
             stmt = select(model).where(getattr(model, field_name) == field_value)
@@ -122,13 +115,3 @@ async def get_entity_from_db(ac: AsyncClient, get_db):
             return result.scalar_one_or_none()
 
     return _get_entity_from_db
-
-
-UserData = namedtuple(
-    "UserData", ["firstname", "lastname", "login", "email", "password"]
-)
-
-
-@pytest.fixture
-def john_doe_data():
-    return UserData("John", "Doe", "john_doe", "john.doe@example.com", "password123")
