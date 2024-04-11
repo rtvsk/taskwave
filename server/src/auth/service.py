@@ -1,8 +1,10 @@
 from src.users.service import UserService
+from src.util.redis_util import cache_data
 
 
 class UserAuthenticationService(UserService):
 
+    @cache_data("user_login", expire_time=600)
     async def get_user_by_login(self, login: str):
         user = await self._get_by_field("login", login)
         return user

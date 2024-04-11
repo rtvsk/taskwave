@@ -8,6 +8,7 @@ from src.users.schemas import UpdateUser
 from src.users.exceptions import UserAlreadyExists, UserNotFound
 
 from src.util.repository import BaseRepository
+from src.util.redis_util import RedisCache
 
 
 class UserService(BaseRepository):
@@ -54,6 +55,8 @@ class UserService(BaseRepository):
         updated_user_params = user_data.model_dump(exclude_none=True)
         updated_user = await self._update("id", user.id, updated_user_params)
 
+        RedisCache.delete_cache(f"user_login:{current_user.login}")
+
         return updated_user
 
     async def deactivate(self, current_user: User):
@@ -64,5 +67,7 @@ class UserService(BaseRepository):
         deactivated_user = await self._update(
             "id", current_user.id, {"is_active": False}
         )
+
+        RedisCache.delete_cache(f"user_login:{current_user.login}")
 
         return deactivated_user

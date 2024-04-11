@@ -3,7 +3,6 @@ from uuid import UUID
 from typing import Optional
 
 from src.util.repository import BaseRepository
-from src.util.redis_util import cache_data, update_cache_data
 from src.tasks_group.schemas import CreateTasksGroup, UpdateTasksGroup
 from src.tasks_group.models import TasksGroup
 
