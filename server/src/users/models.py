@@ -20,4 +20,5 @@ class User(Base):
     lastname = Column(String, nullable=True)
     hashed_password = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
+    is_verified = Column(Boolean(), default=False)
     is_active = Column(Boolean(), default=True)
