@@ -1,18 +1,19 @@
 from src.users.service import UserService
-from src.util.redis_util import cache_data
+from src.users.models import User
+from src.util.redis_util import cache_data, RedisCache
 
 
-class UserAuthenticationService(UserService):
+class UserAuthService(UserService):
 
     @cache_data("user_login", expire_time=600)
-    async def get_user_by_login(self, login: str):
+    async def get_user_by_login(self, login: str) -> User | None:
         user = await self._get_by_field("login", login)
         return user
 
-    def verify_password(self, plain_password, hashed_password):
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return self._PWD_CONTEXT.verify(plain_password, hashed_password)
 
-    async def authentificate_user(self, login: str, password: str):
+    async def authentificate_user(self, login: str, password: str) -> User | None:
         user = await self.get_user_by_login(login=login)
         if not user:
             return
@@ -21,3 +22,8 @@ class UserAuthenticationService(UserService):
             return
 
         return user
+
+    async def verifield_user(self, current_user: User) -> None:
+        await self._update("id", current_user.id, {"is_verified": True})
+
+        RedisCache.delete_cache(f"user_login:{current_user.login}")
