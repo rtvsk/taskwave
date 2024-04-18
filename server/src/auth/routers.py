@@ -1,9 +1,6 @@
-from datetime import timedelta
-
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 
-from src.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from src.exceptions import InvalidCredentials
+from src.exceptions import InvalidCredentials, NotFoundException
 from src.auth.service import UserAuthService
 from src.auth.dependencies import get_user_auth_service, get_current_user_from_token
 from src.auth.schemas import CreateUser, ShowUser, Token, LoginForm
@@ -87,6 +84,6 @@ async def email_verivication(
             await user_auth_service.verifield_user(user)
             message = "The email has been successfully confirmed"
     except:
-        raise InvalidCredentials(detail="pupupu")
+        raise NotFoundException(detail="Invalid link")
     else:
         return {"message": message}
