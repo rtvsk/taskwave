@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date
 from sqlalchemy.dialects.postgresql import UUID
 
 from src.database import Base
@@ -10,8 +10,9 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, index=True, nullable=False)
     title = Column(String, nullable=False)
-    description = Column(String, nullable=True)
+    description = Column(String)
     is_done = Column(Boolean(), default=False)
+    deadline = Column(Date)
     tasks_group_id = Column(
         UUID(as_uuid=True),
         ForeignKey(TasksGroup.id, ondelete="CASCADE"),

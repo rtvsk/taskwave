@@ -1,9 +1,6 @@
-from datetime import timedelta
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 
-from fastapi import APIRouter, Depends, status, Request
-
-from src.config import ACCESS_TOKEN_EXPIRE_MINUTES
-from src.exceptions import InvalidCredentials
+from src.exceptions import InvalidCredentials, NotFoundException
 from src.auth.service import UserAuthService
 from src.auth.dependencies import get_user_auth_service, get_current_user_from_token
 from src.auth.schemas import CreateUser, ShowUser, Token, LoginForm
@@ -37,10 +34,11 @@ auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 )
 async def create_user(
     new_user: CreateUser,
+    background_task: BackgroundTasks,
     user_auth_service: UserAuthService = Depends(get_user_auth_service),
 ):
     user = await user_auth_service.create(user_data=new_user)
-    Email.send_verify_email(user)
+    background_task.add_task(Email.send_verify_email, user)
 
     return user
 
@@ -85,7 +83,7 @@ async def email_verivication(
         else:
             await user_auth_service.verifield_user(user)
             message = "The email has been successfully confirmed"
-    except InvalidCredentials:
-        raise
+    except:
+        raise NotFoundException(detail="Invalid link")
     else:
         return {"message": message}
