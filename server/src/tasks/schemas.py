@@ -1,3 +1,4 @@
+from datetime import date
 from pydantic import BaseModel, field_validator
 from src.exceptions import UnprocessableException
 
@@ -5,6 +6,7 @@ from src.exceptions import UnprocessableException
 class TaskBase(BaseModel):
     title: str
     description: str | None = None
+    deadline: date | None = None
 
     @field_validator("title")
     def validate_title(cls, value):
@@ -27,3 +29,4 @@ class CreateTask(TaskBase):
 class UpdateTask(TaskBase):
     title: str | None = None
     is_done: bool | None = None
+    deadline: date | None = None
