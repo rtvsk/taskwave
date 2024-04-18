@@ -19,7 +19,7 @@ class TasksGroup(Base):
     )
     is_done = Column(Boolean(), default=False)
     title = Column(String, nullable=False)
-    description = Column(String, nullable=True)
+    description = Column(String)
     author_id = Column(
         UUID(as_uuid=True), ForeignKey(User.id, ondelete="CASCADE"), nullable=False
     )

@@ -16,8 +16,8 @@ class User(Base):
         unique=True,
     )
     login = Column(String, nullable=False)
-    firstname = Column(String, nullable=True)
-    lastname = Column(String, nullable=True)
+    firstname = Column(String)
+    lastname = Column(String)
     hashed_password = Column(String, nullable=False)
     email = Column(String, nullable=False, unique=True)
     is_verified = Column(Boolean(), default=False)
