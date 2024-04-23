@@ -11,7 +11,7 @@ from src.auth.jwt import create_access_token
 class Email:
 
     @classmethod
-    def _send(
+    async def _send(
         cls, email_to: str, subject: str, template: str, subtype: str = "html"
     ) -> None:
         try:
@@ -29,7 +29,7 @@ class Email:
             print(f"Failed to send email: {e}")
 
     @classmethod
-    def send_verify_email(cls, recipient: User) -> None:
+    async def send_verify_email(cls, recipient: User) -> None:
         subject = "Verify email for Reminder"
 
         verify_token = create_access_token({"sub": recipient.login}, timedelta(days=2))
@@ -45,10 +45,10 @@ class Email:
                     </div>
                 """
 
-        cls._send(recipient.email, subject, verify_email_template)
+        await cls._send(recipient.email, subject, verify_email_template)
 
     @classmethod
-    def send_test(cls, recipient: User) -> None:
+    async def send_test(cls, recipient: User) -> None:
         subject = "Test"
 
         test_template = f"""
@@ -59,4 +59,4 @@ class Email:
                     </div>
                 """
 
-        cls._send(recipient.email, subject, test_template)
+        await cls._send(recipient.email, subject, test_template)
