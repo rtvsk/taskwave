@@ -11,54 +11,52 @@ from src.auth.jwt import create_access_token
 class Email:
 
     @classmethod
-    def send_verify_email(cls, recipient: User) -> EmailMessage:
+    def _send(
+        cls, email_to: str, subject: str, template: str, subtype: str = "html"
+    ) -> None:
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(SMTP_EMAIL, SMTP_PASSWORD)
                 email = EmailMessage()
-                email["Subject"] = "Verify email for Reminder"
+                email["Subject"] = subject
                 email["From"] = SMTP_EMAIL
-                email["To"] = recipient.email
+                email["To"] = email_to
 
-                verify_token = create_access_token(
-                    {"sub": recipient.login}, timedelta(days=2)
-                )
-
-                verify_email_template = f"""
-                            <div>
-                                <h3> Hello, sweety</h3>
-                                <br>
-                                <p>Click on the button</p>
-                                <a href="http://localhost:8000/api/auth/verification/{verify_token}">
-                                    Verify email
-                                </a>
-                            </div>
-                        """
-
-                email.set_content(verify_email_template, subtype="html")
+                email.set_content(template, subtype=subtype)
                 server.send_message(email)
+
         except Exception as e:
             print(f"Failed to send email: {e}")
 
     @classmethod
+    def send_verify_email(cls, recipient: User) -> None:
+        subject = "Verify email for Reminder"
+
+        verify_token = create_access_token({"sub": recipient.login}, timedelta(days=2))
+
+        verify_email_template = f"""
+                    <div>
+                        <h3> Hello, sweety</h3>
+                        <br>
+                        <p>Click on the button</p>
+                        <a href="http://localhost:8000/api/auth/verification/{verify_token}">
+                            Verify email
+                        </a>
+                    </div>
+                """
+
+        cls._send(recipient.email, subject, verify_email_template)
+
+    @classmethod
     def send_test(cls, recipient: User) -> None:
-        try:
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                server.login(SMTP_EMAIL, SMTP_PASSWORD)
-                email = EmailMessage()
-                email["Subject"] = "AAAAAAAAAA"
-                email["From"] = SMTP_EMAIL
-                email["To"] = recipient.email
+        subject = "Test"
 
-                verify_email_template = f"""
-                            <div>
-                                <h3> Hello, sweety</h3>
-                                <br>
-                                <p>Check mailing with Celery</p>
-                            </div>
-                        """
+        test_template = f"""
+                    <div>
+                        <h3> Hello, sweety</h3>
+                        <br>
+                        <p>Check mailing with Celery</p>
+                    </div>
+                """
 
-                email.set_content(verify_email_template, subtype="html")
-                server.send_message(email)
-        except Exception as e:
-            print(f"Failed to send email: {e}")
+        cls._send(recipient.email, subject, test_template)
