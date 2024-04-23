@@ -9,11 +9,3 @@ app.conf.beat_schedule = {
         "schedule": timedelta(minutes=2),
     },
 }
-
-
-# app.conf.beat_schedule = {
-#     "check_deadlines_daily": {
-#         "task": "celery_tasks.check_deadlines",
-#         "schedule": timedelta(minutes=2),
-#     },
-# }
