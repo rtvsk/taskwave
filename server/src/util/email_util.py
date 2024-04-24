@@ -60,3 +60,17 @@ class Email:
                 """
 
         await cls._send(recipient.email, subject, test_template)
+
+    @classmethod
+    async def send_test_reminder_letter(cls, recipient: User, name) -> None:
+        subject = "Test"
+
+        test_template = f"""
+                    <div>
+                        <h3> Hello, sweety. Don't forget</h3>
+                        <br>
+                        <p>The deadline for completing the task {name} is in three days</p>
+                    </div>
+                """
+
+        await cls._send(recipient.email, subject, test_template)

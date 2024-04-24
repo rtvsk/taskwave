@@ -29,4 +29,3 @@ class CreateTask(TaskBase):
 class UpdateTask(TaskBase):
     title: str | None = None
     is_done: bool | None = None
-    deadline: date | None = None
