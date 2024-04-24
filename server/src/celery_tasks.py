@@ -19,23 +19,6 @@ async def get_users_from_db() -> list[User]:
         return [user[0] for user in users]
 
 
-async def send_reminder_letter() -> None:
-    users = await get_users_from_db()
-
-    for user in users:
-        try:
-            await Email.send_test(user)
-
-        except Exception as e:
-            print(f"Something wrooooooong: {e}")
-
-
-@app.task
-def send_test_email() -> None:
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(send_reminder_letter())
-
-
 async def get_tasksgroup_from_db() -> list[TasksGroup]:
     async with async_session_maker() as session:
         result = await session.execute(
@@ -52,13 +35,29 @@ async def get_tasksgroup_from_db() -> list[TasksGroup]:
         return [tasks_group[0] for tasks_group in tasks_groups]
 
 
-# async def get_user_from_task(tasks) -> list[User]:
-#     user_bond_task = {}
+async def create_bond():
+    tasks_groups = await get_tasksgroup_from_db()
+    bond = {}
+    if tasks_groups:
+        available_users = await get_users_from_db()
+        for task in tasks_groups:
+            for user in available_users:
+                if task.author_id == user.id:
+                    bond[user] = task.title
+    return bond
 
-#     tasks_groups = user.tasks_groups
-#     deadlines = []
-#     for tasks_group in tasks_groups:
-#         tasks = tasks_group.tasks
-#         for task in tasks:
-#             if task.deadline:
-#                 deadlines.append(task.deadline)
+
+async def test_reminder_letter() -> None:
+    user_task = await create_bond()
+    for user, task in user_task.items():
+        try:
+            await Email.send_test_reminder_letter(user, task)
+
+        except Exception as e:
+            print(f"Something wrooooooong: {e}")
+
+
+@app.task
+def send_test_letter() -> None:
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(test_reminder_letter())
