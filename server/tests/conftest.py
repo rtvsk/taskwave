@@ -1,4 +1,5 @@
 import pytest
+import logging
 
 from datetime import timedelta
 from typing import AsyncGenerator
@@ -6,7 +7,6 @@ from collections import namedtuple
 
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
@@ -17,7 +17,18 @@ from src.config import DATABASE_URL_TEST
 from src.main import app
 
 from src.auth.jwt import create_access_token
+from src.users.models import User
+from src.tasks_group.models import TasksGroup
+from src.tasks.models import Task
 
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename="test_log",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
+logger = logging.getLogger(__name__)
 
 engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool, echo=True)
 async_session_maker = sessionmaker(
@@ -33,14 +44,73 @@ async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
 
 app.dependency_overrides[get_async_session] = override_get_async_session
 
+TEST_USER = {
+    "id": "cb417dbc-4c34-4028-af90-64c3b79300e2",
+    "login": "Test",
+    "email": "test-email34@yandex.ru",
+    "hashed_password": "12345678T",
+}
+
+TEST_TASKS_GROUP = {
+    "id": "0454e5e0-24fc-484b-adc2-fd3c8a46b5ee",
+    "title": "testTasksGroup",
+    "author_id": "cb417dbc-4c34-4028-af90-64c3b79300e2",
+}
+
+TEST_TASK = {
+    "id": 99,
+    "title": "testTask",
+    "tasks_group_id": "0454e5e0-24fc-484b-adc2-fd3c8a46b5ee",
+}
+
 
 @pytest.fixture(autouse=True, scope="session")
 async def prepare_database():
+    logger.info("Preparing database...")
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    logger.info("Database tables created successfully.")
+
+    async with async_session_maker() as session:
+        try:
+            logger.info("Inserting test user...")
+            user = User(**TEST_USER)
+            session.add(user)
+            await session.commit()
+            logger.info("Test user inserted successfully.")
+        except Exception as e:
+            logger.error(f"Error inserting test user: {e}")
+            await session.rollback()
+            logger.info("Rolled back transaction.")
+
+    async with async_session_maker() as session:
+        try:
+            logger.info("Inserting test tasks group...")
+            tasks_group = TasksGroup(**TEST_TASKS_GROUP)
+            session.add(tasks_group)
+            await session.commit()
+            logger.info("Test tasks group inserted successfully.")
+        except Exception as e:
+            logger.error(f"Error inserting test tasks group: {e}")
+            await session.rollback()
+            logger.info("Rolled back transaction.")
+
+    async with async_session_maker() as session:
+        try:
+            logger.info("Inserting test task...")
+            task = Task(**TEST_TASK)
+            session.add(task)
+            await session.commit()
+            logger.info("Test task inserted successfully.")
+        except Exception as e:
+            logger.error(f"Error inserting test task: {e}")
+            await session.rollback()
+            logger.info("Rolled back transaction.")
+
+    logger.info("Database preparation complete.")
     yield
-    async with engine_test.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+    # async with engine_test.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all)
 
 
 @pytest.fixture(scope="session")
@@ -86,32 +156,3 @@ def john_doe_signin_data():
 @pytest.fixture
 def john_doe_update_data():
     return UserUpdateData("John", "Doe")
-
-
-##### THINK THINK THINK #####
-@pytest.fixture
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
-
-
-@pytest.fixture(scope="function")
-async def get_first_from_db(api_client: AsyncClient, get_db):
-    async def _get_first_from_db(model):
-        async with async_session_maker() as session:
-            stmt = select(model).limit(1)
-            result = await session.execute(stmt)
-            return result.scalar_one_or_none()
-
-    return _get_first_from_db
-
-
-@pytest.fixture(scope="function")
-async def get_entity_from_db(api_client: AsyncClient, get_db):
-    async def _get_entity_from_db(model, field_name: str, field_value: str):
-        async with async_session_maker() as session:
-            stmt = select(model).where(getattr(model, field_name) == field_value)
-            result = await session.execute(stmt)
-            return result.scalar_one_or_none()
-
-    return _get_entity_from_db
