@@ -1,32 +1,37 @@
 import pytest
 from httpx import AsyncClient
 from src.tasks_group.models import TasksGroup
+from tests.conftest import TEST_TASKS_GROUP
+
+TASKS_GROUP_DATA = {
+    "title": "some title",
+    "description": "some description",
+}
+
+EDIT_TASKS_GROUP_DATA = {
+    "title": "some new title",
+    "description": "some new description",
+}
 
 
 @pytest.mark.anyio
-async def test_create_tasks_group(
-    ac: AsyncClient,
-    created_test_access_token,
-):
-    tasks_group_data = {
-        "title": "test tasks group",
-        "description": "test",
-    }
+async def test_create_tasks_group(api_client: AsyncClient, created_test_access_token):
 
     headers = created_test_access_token
 
-    response = await ac.post("/tasks", json=tasks_group_data, headers=headers)
+    response = await api_client.post(
+        "api/tasks", json=TASKS_GROUP_DATA, headers=headers
+    )
     assert response.status_code == 201
-    created_tasks_group = response.json()
+    response_data = response.json()
 
-    assert created_tasks_group["title"] == tasks_group_data["title"]
-    assert created_tasks_group["description"] == tasks_group_data["description"]
+    for key, value in TASKS_GROUP_DATA.items():
+        assert value == response_data[key]
 
 
 @pytest.mark.anyio
 async def test_empty_title_exception(
-    ac: AsyncClient,
-    created_test_access_token,
+    api_client: AsyncClient, created_test_access_token
 ):
     tasks_group_data = {
         "title": "",
@@ -34,76 +39,68 @@ async def test_empty_title_exception(
 
     headers = created_test_access_token
 
-    response = await ac.post("/tasks", json=tasks_group_data, headers=headers)
+    response = await api_client.post(
+        "api/tasks", json=tasks_group_data, headers=headers
+    )
     assert response.status_code == 422
 
     assert "Title must contains at least one simbol" in response.json()["detail"]
 
 
 @pytest.mark.anyio
-async def test_users_tasks_group(
-    ac: AsyncClient,
-    created_test_access_token,
-):
-    tasks_group_data = {
-        "title": "test tasks group",
-        "description": "test",
-    }
+async def test_users_tasks_group(api_client: AsyncClient, created_test_access_token):
 
     headers = created_test_access_token
 
-    response = await ac.get("/tasks", headers=headers)
+    response = await api_client.get("api/tasks", headers=headers)
     response.status_code == 200
-    reasponse_tasks_group = response.json()
+    response_data = response.json()
 
-    assert len(reasponse_tasks_group) == 1
-    assert reasponse_tasks_group[0]["title"] == tasks_group_data["title"]
-    assert reasponse_tasks_group[0]["description"] == tasks_group_data["description"]
+    assert len(response_data) == 1
+    for key, value in TASKS_GROUP_DATA.items():
+        assert value == response_data[0][key]
 
 
 @pytest.mark.anyio
 async def test_edit_tasks_group(
-    ac: AsyncClient,
-    created_test_access_token,
-    get_first_from_db,
+    api_client: AsyncClient, created_test_access_token, get_entity_from_db
 ):
-    tasks_group_data = {
-        "title": "test tasks group2",
-        "description": "test2",
-    }
-    tasks_group_from_db = await get_first_from_db(TasksGroup)
+    tasks_group_from_db = await get_entity_from_db(
+        TasksGroup, "title", TASKS_GROUP_DATA["title"]
+    )
+
     headers = created_test_access_token
 
-    response = await ac.patch(
-        f"/tasks/{tasks_group_from_db.id}",
+    response = await api_client.patch(
+        f"api/tasks/{tasks_group_from_db.id}",
         headers=headers,
-        json=tasks_group_data,
+        json=EDIT_TASKS_GROUP_DATA,
     )
     assert response.status_code == 200
 
-    updated_tasks_group = response.json()
-    assert updated_tasks_group["title"] == tasks_group_data["title"]
-    assert updated_tasks_group["description"] == tasks_group_data["description"]
+    response_data = response.json()
+    for key, value in EDIT_TASKS_GROUP_DATA.items():
+        assert value == response_data[key]
 
 
 @pytest.mark.anyio
-async def test_empty_data_edit_exception(
-    ac: AsyncClient,
-    created_test_access_token,
-    get_first_from_db,
+@pytest.mark.parametrize(
+    "tasks_group_id, status, detail",
+    [
+        ("cb417dbc-4c34-4028-af90-64c3b79300e2", 404, "Tasks group not found"),
+        (TEST_TASKS_GROUP["id"], 406, "User not owner"),
+    ],
+)
+async def test_edit_tasks_group_exception(
+    api_client: AsyncClient, created_test_access_token, tasks_group_id, status, detail
 ):
-    tasks_group_data = {}
-    tasks_group_from_db = await get_first_from_db(TasksGroup)
     headers = created_test_access_token
 
-    response = await ac.patch(
-        f"/tasks/{tasks_group_from_db.id}",
+    response = await api_client.patch(
+        f"api/tasks/{tasks_group_id}",
         headers=headers,
-        json=tasks_group_data,
+        json=TASKS_GROUP_DATA,
     )
-    assert response.status_code == 400
+    assert response.status_code == status
 
-    assert (
-        "At least one parameter for tasks group update info should be provided"
-        in response.json()["detail"]
-    )
+    assert detail in response.json()["detail"]
