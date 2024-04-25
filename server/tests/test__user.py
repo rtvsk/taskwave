@@ -35,34 +35,18 @@ async def test_edit_user(
         assert value == data[key]
 
 
-# @pytest.mark.anyio
-# async def test_empty_data_edit_exception(
-#     ac: AsyncClient,
-#     created_test_access_token,
-# ):
-#     headers = created_test_access_token
+@pytest.mark.anyio
+async def test_empty_data_edit_exception(
+    api_client: AsyncClient, created_test_access_token
+):
+    headers = created_test_access_token
 
-#     user_data = {}
+    user_data = {}
 
-#     response = await ac.patch("/users/edit", headers=headers, json=user_data)
+    response = await api_client.patch("api/users/edit", headers=headers, json=user_data)
 
-#     assert response.status_code == 400
-#     assert (
-#         "At least one parameter for user update info should be provided"
-#         in response.json()["detail"]
-#     )
-
-
-# @pytest.mark.anyio
-# async def test_delete_user(
-#     ac: AsyncClient,
-#     created_test_access_token,
-#     get_entity_from_db,
-# ):
-#     headers = created_test_access_token
-
-#     response = await ac.delete("/users", headers=headers)
-#     user = await get_entity_from_db(Users, "login", "john_doe")
-
-#     assert response.status_code == 200
-#     assert user.is_active == False
+    assert response.status_code == 400
+    assert (
+        "At least one parameter for user update info should be provided"
+        in response.json()["detail"]
+    )
