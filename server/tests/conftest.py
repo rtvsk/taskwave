@@ -7,6 +7,7 @@ from collections import namedtuple
 
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
@@ -108,9 +109,13 @@ async def prepare_database():
             logger.info("Rolled back transaction.")
 
     logger.info("Database preparation complete.")
+
     yield
-    # async with engine_test.begin() as conn:
-    #     await conn.run_sync(Base.metadata.drop_all)
+
+    logger.info("Deleting database...")
+    async with engine_test.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    logger.info("Database tables delete successfully.")
 
 
 @pytest.fixture(scope="session")
@@ -156,3 +161,15 @@ def john_doe_signin_data():
 @pytest.fixture
 def john_doe_update_data():
     return UserUpdateData("John", "Doe")
+
+
+##############THINK THINK THINK#############
+@pytest.fixture
+async def get_entity_from_db(api_client: AsyncClient, get_db):
+    async def _get_entity_from_db(model, field_name: str, field_value: str):
+        async with async_session_maker() as session:
+            result = select(model).where(getattr(model, field_name) == field_value)
+            entity = await session.execute(result)
+            return entity.scalar_one_or_none()
+
+    return _get_entity_from_db
