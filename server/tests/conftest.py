@@ -165,7 +165,7 @@ def john_doe_update_data():
 
 ##############THINK THINK THINK#############
 @pytest.fixture
-async def get_entity_from_db(api_client: AsyncClient, get_db):
+async def get_entity_from_db(api_client: AsyncClient):
     async def _get_entity_from_db(model, field_name: str, field_value: str):
         async with async_session_maker() as session:
             result = select(model).where(getattr(model, field_name) == field_value)
