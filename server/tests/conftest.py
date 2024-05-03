@@ -72,42 +72,22 @@ async def prepare_database():
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created successfully.")
 
-    async with async_session_maker() as session:
-        try:
-            logger.info("Inserting test user...")
-            user = User(**TEST_USER)
-            session.add(user)
-            await session.commit()
-            logger.info("Test user inserted successfully.")
-        except Exception as e:
-            logger.error(f"Error inserting test user: {e}")
-            await session.rollback()
-            logger.info("Rolled back transaction.")
-
-    async with async_session_maker() as session:
-        try:
-            logger.info("Inserting test tasks group...")
-            tasks_group = TasksGroup(**TEST_TASKS_GROUP)
-            session.add(tasks_group)
-            await session.commit()
-            logger.info("Test tasks group inserted successfully.")
-        except Exception as e:
-            logger.error(f"Error inserting test tasks group: {e}")
-            await session.rollback()
-            logger.info("Rolled back transaction.")
-
-    async with async_session_maker() as session:
-        try:
-            logger.info("Inserting test task...")
-            task = Task(**TEST_TASK)
-            session.add(task)
-            await session.commit()
-            logger.info("Test task inserted successfully.")
-        except Exception as e:
-            logger.error(f"Error inserting test task: {e}")
-            await session.rollback()
-            logger.info("Rolled back transaction.")
-
+    for model, data in (
+        (User, TEST_USER),
+        (TasksGroup, TEST_TASKS_GROUP),
+        (Task, TEST_TASK),
+    ):
+        async with async_session_maker() as session:
+            try:
+                logger.info(f"Inserting test in {model}...")
+                add_data = model(**data)
+                session.add(add_data)
+                await session.commit()
+                logger.info(f"Test {model} data inserted successfully.")
+            except Exception as e:
+                logger.error(f"Error inserting test: {e}")
+                await session.rollback()
+                logger.info("Rolled back transaction.")
     logger.info("Database preparation complete.")
 
     yield
