@@ -4,6 +4,7 @@ from httpx import AsyncClient
 from src.tasks.models import Task
 from src.tasks_group.models import TasksGroup
 from tests.test__tasks_group import EDIT_TASKS_GROUP_DATA
+from tests.conftest import TEST_TASK
 
 
 TASK_DATA = {
@@ -77,3 +78,34 @@ async def test_edit_task(
     response_data = response.json()
     for key, value in EDIT_TASK_DATA.items():
         assert value == response_data[key]
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "task_id, status, detail",
+    [
+        (12, 404, "Task not found"),
+        (TEST_TASK["id"], 404, "Task not found"),
+    ],
+)
+async def test_edit_task_exception(
+    api_client: AsyncClient,
+    created_test_access_token,
+    get_entity_from_db,
+    task_id,
+    status,
+    detail,
+):
+    tasks_group_from_db = await get_entity_from_db(
+        TasksGroup, "title", EDIT_TASKS_GROUP_DATA["title"]
+    )
+    headers = created_test_access_token
+
+    response = await api_client.patch(
+        f"api/tasks/{tasks_group_from_db.id}/task/{task_id}",
+        headers=headers,
+        json=TASK_DATA,
+    )
+    assert response.status_code == status
+
+    assert detail in response.json()["detail"]
