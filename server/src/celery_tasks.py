@@ -47,17 +47,17 @@ async def create_bond():
     return bond
 
 
-async def test_reminder_letter() -> None:
+async def send_reminder_letter() -> None:
     user_task = await create_bond()
     for user, task in user_task.items():
         try:
             await Email.send_test_reminder_letter(user, task)
 
         except Exception as e:
-            print(f"Something wrooooooong: {e}")
+            print(f"Something wrong: {e}")
 
 
 @app.task
-def send_test_letter() -> None:
+def send_letter() -> None:
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(test_reminder_letter())
+    loop.run_until_complete(send_reminder_letter())
