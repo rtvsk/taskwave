@@ -3,12 +3,14 @@ import pickle
 from typing import Any, Optional, Callable
 from functools import wraps
 
-from src.config import REDIS_HOST, REDIS_PORT
+from src.config import settings
 
 
 class RedisCache:
 
-    __REDIS_CLIENT = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
+    __REDIS_CLIENT = redis.Redis(
+        host=settings.redis.HOST, port=settings.redis.PORT, db=0
+    )
 
     @classmethod
     def set_cache(

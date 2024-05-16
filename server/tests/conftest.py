@@ -14,7 +14,7 @@ from sqlalchemy.pool import NullPool
 
 from src.database import get_async_session
 from src.database import Base
-from src.config import DATABASE_URL_TEST
+from src.config import settings
 from src.main import app
 
 from src.auth.jwt import create_access_token
@@ -31,7 +31,9 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool, echo=True)
+engine_test = create_async_engine(
+    settings.test_db.URL.get_secret_value(), poolclass=NullPool, echo=True
+)
 async_session_maker = sessionmaker(
     engine_test, class_=AsyncSession, expire_on_commit=False
 )
