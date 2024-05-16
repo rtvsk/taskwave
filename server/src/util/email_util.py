@@ -19,25 +19,28 @@ logger = logging.getLogger(__name__)
 
 class Email:
 
+    __EMAIL = settings.smtp.EMAIL
+    __PASSWORD = settings.smtp.PASSWORD.get_secret_value()
+
     @classmethod
     async def _send(
         cls, email_to: str, subject: str, template: str, subtype: str = "html"
     ) -> None:
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                logger.info(f"Preparing mail from {settings.smtp.EMAIL}...")
-                server.login(settings.smtp.EMAIL, settings.smtp.PASSWORD)
+                logger.info(f"Preparing mail from {cls.__EMAIL}...")
+                server.login(cls.__EMAIL, cls.__PASSWORD)
                 email = EmailMessage()
                 email["Subject"] = subject
-                email["From"] = settings.smtp.EMAIL
+                email["From"] = cls.__EMAIL
                 email["To"] = email_to
 
                 email.set_content(template, subtype=subtype)
-                logger.info(f"End preparing")
                 server.send_message(email)
+                logger.info(f"Mail send")
 
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            logger.debug(f"Failed to send email: {e}")
 
     @classmethod
     async def send_verify_email(cls, recipient: User) -> None:
