@@ -1,11 +1,20 @@
 import smtplib
+import logging
 from datetime import timedelta
 
 from email.message import EmailMessage
 
-from src.config import SMTP_EMAIL, SMTP_PASSWORD
+from src.config import settings
 from src.users.models import User
 from src.auth.jwt import create_access_token
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    filename="email_log",
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
+logger = logging.getLogger(__name__)
 
 
 class Email:
@@ -16,13 +25,15 @@ class Email:
     ) -> None:
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                logger.info(f"Preparing mail from {settings.smtp.EMAIL}...")
+                server.login(settings.smtp.EMAIL, settings.smtp.PASSWORD)
                 email = EmailMessage()
                 email["Subject"] = subject
-                email["From"] = SMTP_EMAIL
+                email["From"] = settings.smtp.EMAIL
                 email["To"] = email_to
 
                 email.set_content(template, subtype=subtype)
+                logger.info(f"End preparing")
                 server.send_message(email)
 
         except Exception as e:
