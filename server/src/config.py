@@ -20,15 +20,15 @@ class DatabaseSettings(BaseSettings):
         )
 
 
-# class JWTSettings(BaseSettings):
-#     ACCESS_TOKEN_EXPIRE_MINUTES: int
-#     REFRESH_TOKEN_EXPIRE_DAYS: int
-#     SECRET_KEY: SecretStr
-#     ALGORITHM: str
+class JWTSettings(BaseSettings):
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_DAYS: int
+    SECRET_KEY: SecretStr
+    ALGORITHM: str
 
-#     model_config = SettingsConfigDict(
-#         env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_"
-#     )
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
+    )
 
 
 class SMTPSettings(BaseSettings):
@@ -71,7 +71,7 @@ class RedisSettings(BaseSettings):
 class Settings(BaseSettings):
     smtp: SMTPSettings = SMTPSettings()
     db: DatabaseSettings = DatabaseSettings()
-    #     jwt: JWTSettings = JWTSettings()
+    jwt: JWTSettings = JWTSettings()
     redis: RedisSettings = RedisSettings()
 
 
@@ -96,8 +96,3 @@ TEST_DB_NAME = os.environ.get("TEST_DB_NAME")
 TEST_DB_USER = os.environ.get("TEST_DB_USER")
 TEST_DB_PASSWORD = os.environ.get("TEST_DB_PASSWORD")
 TEST_DATABASE_URL = f"postgresql+asyncpg://{TEST_DB_USER}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}"
-
-ACCESS_TOKEN_EXPIRE_MINUTES = os.environ.get("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
-REFRESH_TOKEN_EXPIRE_DAYS = os.environ.get("JWT_REFRESH_TOKEN_EXPIRE_DAYS")
-SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
-ALGORITHM = os.environ.get("JWT_ALGORITHM")
