@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, status
 
 from src.auth.dependencies import get_current_user_from_token
+from src.auth.responses import credentials_error_response
 from src.users.dependencies import get_user_service
 from src.users.service import UserService
 from src.users.schemas import ShowUser, UpdateUser, DeletedUser
 from src.users.models import User
+from src.users.responses import users_edit_responses
 
 
 users_router = APIRouter(prefix="/users", tags=["Users"])
@@ -14,15 +16,7 @@ users_router = APIRouter(prefix="/users", tags=["Users"])
     "/me",
     status_code=status.HTTP_200_OK,
     response_model=ShowUser,
-    responses={
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            }
-        },
-    },
+    responses={**credentials_error_response},
 )
 async def read_user(current_user: User = Depends(get_current_user_from_token)):
     return current_user
@@ -32,29 +26,7 @@ async def read_user(current_user: User = Depends(get_current_user_from_token)):
     "/edit",
     status_code=status.HTTP_200_OK,
     response_model=ShowUser,
-    responses={
-        400: {
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "At least one parameter for user update info should be provided"
-                    }
-                }
-            }
-        },
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            }
-        },
-        422: {
-            "content": {
-                "application/json": {"example": {"detail": "Validation error mesage"}}
-            },
-        },
-    },
+    responses={**users_edit_responses},
 )
 async def edit_user(
     user_data: UpdateUser,
@@ -68,24 +40,7 @@ async def edit_user(
     "",
     status_code=status.HTTP_200_OK,
     response_model=DeletedUser,
-    responses={
-        400: {
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "At least one parameter for user update info should be provided"
-                    }
-                }
-            }
-        },
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            }
-        },
-    },
+    responses={**credentials_error_response},
 )
 async def delete_user(
     current_user: User = Depends(get_current_user_from_token),
