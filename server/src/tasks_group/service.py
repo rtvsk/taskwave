@@ -16,7 +16,7 @@ class TasksGroupService(BaseRepository):
         tasks_group_dict = tasks_group_data.model_dump()
         tasks_group_dict["author_id"] = author_id
 
-        tasks_group = await self._save(tasks_group_dict)
+        tasks_group = await self.save(tasks_group_dict)
 
         return tasks_group
 

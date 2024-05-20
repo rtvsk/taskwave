@@ -43,7 +43,7 @@ class UserService(BaseRepository):
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self._PWD_CONTEXT.hash(password)
 
-        user = await self._save(user_dict)
+        user = await self.save(user_dict)
 
         return user
 

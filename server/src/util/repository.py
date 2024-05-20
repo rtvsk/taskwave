@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, update, delete
@@ -13,7 +13,7 @@ class BaseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def _save(self, playload: dict[str, Any]):
+    async def save(self, playload: dict[str, Any]):
         """
         Save data in the database
         """
@@ -32,7 +32,7 @@ class BaseRepository:
         )
         return result.scalar_one_or_none()
 
-    async def _get_by_field(self, key: str, value: str, all: Optional[bool] = False):
+    async def _get_by_field(self, key: str, value: str, all: bool = False):
         """
         Retrieve data from the database for the given key with the specified value
         """

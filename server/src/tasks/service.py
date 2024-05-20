@@ -13,7 +13,7 @@ class TaskService(BaseRepository):
         task_dict = task_data.model_dump()
         task_dict["tasks_group_id"] = tasks_group_id
 
-        task = await self._save(task_dict)
+        task = await self.save(task_dict)
 
         return task
 
