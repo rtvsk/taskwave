@@ -26,7 +26,7 @@ class TasksGroupService(BaseRepository):
         return tasks_group
 
     async def get_all_from_user(self, author_id: UUID) -> Optional[list[TasksGroup]]:
-        tasks_groups = await self._get_by_field("author_id", author_id, all=True)
+        tasks_groups = await self.get_by_field("author_id", author_id, all=True)
 
         return tasks_groups
 

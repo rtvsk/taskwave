@@ -7,7 +7,7 @@ class UserAuthService(UserService):
 
     @cache_data("user_login", expire_time=600)
     async def get_user_by_login(self, login: str) -> User | None:
-        user = await self._get_by_field("login", login)
+        user = await self.get_by_field("login", login)
         return user
 
     def verify_password(self, plain_password: str, hashed_password: str) -> bool:

@@ -24,7 +24,7 @@ class UserService(BaseRepository):
         )
         return result.scalar_one_or_none()
 
-    async def _get_by_field(self, key: str, value: str):
+    async def get_by_field(self, key: str, value: str):
         result = await self.session.execute(
             select(self.model).where(
                 and_(getattr(self.model, key) == value, self.model.is_active)
@@ -33,10 +33,10 @@ class UserService(BaseRepository):
         return result.scalar_one_or_none()
 
     async def create(self, user_data: CreateUser):
-        if await self._get_by_field("login", user_data.login):
+        if await self.get_by_field("login", user_data.login):
             raise UserAlreadyExists(detail="User with this login already exists!")
 
-        if await self._get_by_field("email", user_data.email):
+        if await self.get_by_field("email", user_data.email):
             raise UserAlreadyExists(detail="User with this email already exists!")
 
         user_dict = user_data.model_dump()

@@ -23,7 +23,7 @@ class TaskService(BaseRepository):
         return task
 
     async def get_from_tasks_group(self, tasks_group_id: UUID):
-        tasks = await self._get_by_field("tasks_group_id", tasks_group_id, all=True)
+        tasks = await self.get_by_field("tasks_group_id", tasks_group_id, all=True)
 
         return tasks
 
