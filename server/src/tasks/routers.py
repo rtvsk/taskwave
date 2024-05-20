@@ -147,4 +147,4 @@ async def delete_task(
     task: Task = Depends(valid_tasks_group),
     task_service: TaskService = Depends(get_task_service),
 ):
-    return await task_service.delete(task_id=task.id)
+    return await task_service.delete_task(task_id=task.id)

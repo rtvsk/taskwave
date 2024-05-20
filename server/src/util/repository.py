@@ -16,7 +16,7 @@ class BaseRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def save(self, playload: dict[str, Any]) -> None | T:
+    async def save(self, playload: dict[str, Any]) -> T:
         """
         Save data in the database
         """
@@ -26,7 +26,7 @@ class BaseRepository:
         await self.session.commit()
         return entity
 
-    async def get_by_id(self, entity_id: UUID | int) -> None | T:
+    async def get_by_id(self, entity_id: UUID | int) -> T | None:
         """
         Retrieve data from the database for the id
         """
@@ -37,7 +37,7 @@ class BaseRepository:
 
     async def get_by_field(
         self, key: str, value: str, all: bool = False
-    ) -> None | T | list[T]:
+    ) -> T | list[T] | None:
         """
         Retrieve data from the database for the given key with the specified value
         """
@@ -50,7 +50,7 @@ class BaseRepository:
 
         return result.scalar_one_or_none()
 
-    async def update(self, key: str, value: Any, playload: dict[str, Any]) -> None | T:
+    async def update(self, key: str, value: Any, playload: dict[str, Any]) -> T | None:
         """
         Update data in the database for the given key with the specified value
         """
@@ -70,7 +70,7 @@ class BaseRepository:
 
         return result.scalar_one_or_none()
 
-    async def _delete(self, entity_id: UUID | int) -> None:
+    async def delete(self, entity_id: UUID | int) -> None:
         """
         Delete data from the database by the id
         """

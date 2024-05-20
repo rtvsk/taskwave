@@ -41,5 +41,5 @@ class TasksGroupService(BaseRepository):
 
         return updated_tasks_group
 
-    async def delete(self, tasks_group_id: UUID) -> None:
-        await self._delete(tasks_group_id)
+    async def delete_tasks_group(self, tasks_group_id: UUID) -> None:
+        await self.delete(tasks_group_id)

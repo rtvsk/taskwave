@@ -16,7 +16,7 @@ class UserService(BaseRepository):
 
     _PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    async def get_by_id(self, user_id: UUID):
+    async def get_by_id(self, user_id: UUID) -> User | None:
         result = await self.session.execute(
             select(self.model).where(
                 and_(self.model.id == user_id, self.model.is_active)
@@ -24,7 +24,7 @@ class UserService(BaseRepository):
         )
         return result.scalar_one_or_none()
 
-    async def get_by_field(self, key: str, value: str):
+    async def get_by_field(self, key: str, value: str) -> User | None:
         result = await self.session.execute(
             select(self.model).where(
                 and_(getattr(self.model, key) == value, self.model.is_active)
@@ -32,7 +32,7 @@ class UserService(BaseRepository):
         )
         return result.scalar_one_or_none()
 
-    async def create(self, user_data: CreateUser):
+    async def create(self, user_data: CreateUser) -> User:
         if await self.get_by_field("login", user_data.login):
             raise UserAlreadyExists(detail="User with this login already exists!")
 
@@ -47,7 +47,7 @@ class UserService(BaseRepository):
 
         return user
 
-    async def update_user(self, user_data: UpdateUser, current_user: User):
+    async def update_user(self, user_data: UpdateUser, current_user: User) -> User:
         user = await self.get_by_id(current_user.id)
         if not user:
             raise UserNotFound
@@ -59,7 +59,7 @@ class UserService(BaseRepository):
 
         return updated_user
 
-    async def deactivate(self, current_user: User):
+    async def deactivate(self, current_user: User) -> User:
         user = await self.get_by_id(current_user.id)
         if not user:
             raise UserNotFound
