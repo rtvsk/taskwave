@@ -20,8 +20,8 @@ class TasksGroupService(BaseRepository):
 
         return tasks_group
 
-    async def get_by_id(self, tasks_group_id: UUID) -> Optional[TasksGroup]:
-        tasks_group = await self._get_by_id(tasks_group_id)
+    async def get(self, tasks_group_id: UUID) -> Optional[TasksGroup]:
+        tasks_group = await self.get_by_id(tasks_group_id)
 
         return tasks_group
 

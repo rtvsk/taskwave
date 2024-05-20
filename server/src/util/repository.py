@@ -23,7 +23,7 @@ class BaseRepository:
         await self.session.commit()
         return entity
 
-    async def _get_by_id(self, entity_id: UUID | int):
+    async def get_by_id(self, entity_id: UUID | int):
         """
         Retrieve data from the database for the id
         """

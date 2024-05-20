@@ -17,8 +17,8 @@ class TaskService(BaseRepository):
 
         return task
 
-    async def get_by_id(self, task_id: int):
-        task = await self._get_by_id(task_id)
+    async def get(self, task_id: int):
+        task = await self.get_by_id(task_id)
 
         return task
 

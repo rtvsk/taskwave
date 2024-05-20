@@ -18,7 +18,7 @@ async def valid_tasks_group_id(
     tasks_group_id: UUID,
     tasks_group_service: TasksGroupService = Depends(get_tasks_group_service),
 ):
-    tasks_group = await tasks_group_service.get_by_id(tasks_group_id)
+    tasks_group = await tasks_group_service.get(tasks_group_id)
     if not tasks_group:
         raise TasksGroupNotFound
 

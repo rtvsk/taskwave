@@ -16,7 +16,7 @@ class UserService(BaseRepository):
 
     _PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    async def _get_by_id(self, user_id: UUID):
+    async def get_by_id(self, user_id: UUID):
         result = await self.session.execute(
             select(self.model).where(
                 and_(self.model.id == user_id, self.model.is_active)
@@ -48,7 +48,7 @@ class UserService(BaseRepository):
         return user
 
     async def update(self, user_data: UpdateUser, current_user: User):
-        user = await self._get_by_id(current_user.id)
+        user = await self.get_by_id(current_user.id)
         if not user:
             raise UserNotFound
 
@@ -60,7 +60,7 @@ class UserService(BaseRepository):
         return updated_user
 
     async def deactivate(self, current_user: User):
-        user = await self._get_by_id(current_user.id)
+        user = await self.get_by_id(current_user.id)
         if not user:
             raise UserNotFound
 

@@ -16,7 +16,7 @@ def get_task_service(session: AsyncSession = Depends(get_async_session)):
 async def valid_task_id(
     task_id: int, task_service: TaskService = Depends(get_task_service)
 ):
-    task = await task_service.get_by_id(task_id)
+    task = await task_service.get(task_id)
     if not task:
         raise TaskNotFound
 
