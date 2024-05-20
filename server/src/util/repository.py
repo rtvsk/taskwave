@@ -50,7 +50,7 @@ class BaseRepository:
 
         return result.scalar_one_or_none()
 
-    async def _update(self, key: str, value: Any, playload: dict[str, Any]) -> None | T:
+    async def update(self, key: str, value: Any, playload: dict[str, Any]) -> None | T:
         """
         Update data in the database for the given key with the specified value
         """

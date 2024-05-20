@@ -27,9 +27,9 @@ class TaskService(BaseRepository):
 
         return tasks
 
-    async def update(self, task_data: UpdateTask, task_id: int):
+    async def update_task(self, task_data: UpdateTask, task_id: int):
         updated_task_params = task_data.model_dump(exclude_none=True)
-        updated_task = await self._update("id", task_id, updated_task_params)
+        updated_task = await self.update("id", task_id, updated_task_params)
 
         return updated_task
 

@@ -30,12 +30,12 @@ class TasksGroupService(BaseRepository):
 
         return tasks_groups
 
-    async def update(
+    async def update_tasks_group(
         self, tasks_group_id: UUID, tasks_group_data: UpdateTasksGroup
     ) -> TasksGroup:
         updated_task_group_params = tasks_group_data.model_dump(exclude_none=True)
 
-        updated_tasks_group = await self._update(
+        updated_tasks_group = await self.update(
             "id", tasks_group_id, updated_task_group_params
         )
 

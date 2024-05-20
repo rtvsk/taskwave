@@ -117,7 +117,7 @@ async def edit_task(
     task: Task = Depends(valid_tasks_group),
     task_service: TaskService = Depends(get_task_service),
 ):
-    return await task_service.update(task_data=task_data, task_id=task.id)
+    return await task_service.update_task(task_data=task_data, task_id=task.id)
 
 
 @tasks_router.delete(

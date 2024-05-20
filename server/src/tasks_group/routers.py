@@ -102,7 +102,7 @@ async def edit_tasks_group(
     tasks_group: TasksGroup = Depends(valid_owned_tasks),
     tasks_group_service: TasksGroupService = Depends(get_tasks_group_service),
 ):
-    return await tasks_group_service.update(
+    return await tasks_group_service.update_tasks_group(
         tasks_group_id=tasks_group.id, tasks_group_data=tasks_group_data
     )
 

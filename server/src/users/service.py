@@ -47,13 +47,13 @@ class UserService(BaseRepository):
 
         return user
 
-    async def update(self, user_data: UpdateUser, current_user: User):
+    async def update_user(self, user_data: UpdateUser, current_user: User):
         user = await self.get_by_id(current_user.id)
         if not user:
             raise UserNotFound
 
         updated_user_params = user_data.model_dump(exclude_none=True)
-        updated_user = await self._update("id", user.id, updated_user_params)
+        updated_user = await self.update("id", user.id, updated_user_params)
 
         RedisCache.delete_cache(f"user_login:{current_user.login}")
 
@@ -64,7 +64,7 @@ class UserService(BaseRepository):
         if not user:
             raise UserNotFound
 
-        deactivated_user = await self._update(
+        deactivated_user = await self.update(
             "id", current_user.id, {"is_active": False}
         )
 
