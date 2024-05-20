@@ -33,7 +33,9 @@ async def edit_user(
     current_user: User = Depends(get_current_user_from_token),
     user_service: UserService = Depends(get_user_service),
 ):
-    return await user_service.update(user_data=user_data, current_user=current_user)
+    return await user_service.update_user(
+        user_data=user_data, current_user=current_user
+    )
 
 
 @users_router.delete(
