@@ -17,7 +17,7 @@ from src.database import Base
 from src.config import settings
 from src.main import app
 
-from src.auth.jwt import create_access_token
+from src.auth.jwt import JwtToken
 from src.users.models import User
 from src.tasks_group.models import TasksGroup
 from src.tasks.models import Task
@@ -107,10 +107,7 @@ def anyio_backend():
 
 @pytest.fixture(autouse=True, scope="session")
 def created_test_access_token() -> dict[str:str]:
-    access_token = create_access_token(
-        data={"sub": "john_doe"},
-        expires_delta=timedelta(minutes=30),
-    )
+    access_token = JwtToken.create_access_token(data={"sub": "john_doe"})
     return {"Authorization": f"Bearer {access_token}"}
 
 
