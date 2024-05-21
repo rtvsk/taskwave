@@ -6,7 +6,7 @@ from email.message import EmailMessage
 
 from src.config import settings
 from src.users.models import User
-from src.auth.jwt import create_access_token
+from src.auth.jwt import JwtToken
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -46,7 +46,9 @@ class Email:
     async def send_verify_email(cls, recipient: User) -> None:
         subject = "Verify email for Reminder"
 
-        verify_token = create_access_token({"sub": recipient.login}, timedelta(days=2))
+        verify_token = JwtToken.create_access_token(
+            {"sub": recipient.login}, timedelta(days=2)
+        )
 
         verify_email_template = f"""
                     <div>

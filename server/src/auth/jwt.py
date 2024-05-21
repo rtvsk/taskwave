@@ -4,23 +4,6 @@ from jose import jwt
 from src.config import settings
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(UTC) + expires_delta
-    else:
-        expire = datetime.now(UTC) + timedelta(
-            minutes=settings.jwt.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(
-        to_encode,
-        key=settings.jwt.SECRET_KEY.get_secret_value(),
-        algorithm=settings.jwt.ALGORITHM,
-    )
-    return encoded_jwt
-
-
 class JwtToken:
 
     TOKEN_TYPE_FIELD: str = "type"
@@ -48,12 +31,17 @@ class JwtToken:
         return decoded
 
     @classmethod
-    def create_access_token(cls, data: dict) -> str:
+    def create_access_token(
+        cls, data: dict, expires_delta: timedelta | None = None
+    ) -> str:
         payload = {cls.TOKEN_TYPE_FIELD: cls.ACCESS_TOKEN_TYPE}
         payload.update(data)
-        expire = datetime.now(UTC) + timedelta(
-            minutes=settings.jwt.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        if expires_delta:
+            expire = datetime.now(UTC) + expires_delta
+        else:
+            expire = datetime.now(UTC) + timedelta(
+                minutes=settings.jwt.ACCESS_TOKEN_EXPIRE_MINUTES
+            )
         encoded_access_jwt = cls._encode(data=payload, expires_delta=expire)
         return encoded_access_jwt
 
