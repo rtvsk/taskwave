@@ -2,3 +2,5 @@
 /**/Dockerfile
 /**/init.sql
 .vscode/
+.env
+.venv
