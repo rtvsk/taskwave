@@ -46,6 +46,9 @@ class JwtToken:
 
 
 ##############THINK THINK THINK#############
+
+# REFRESH_TOKEN_TYPE: str = "refresh"
+
 # @classmethod
 # def create_refresh_token(cls, data: dict) -> str:
 #     payload = {cls.TOKEN_TYPE_FIELD: cls.REFRESH_TOKEN_TYPE}
