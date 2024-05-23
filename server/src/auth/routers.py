@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 
-from src.exceptions import InvalidCredentials, NotFoundException
+from src.exceptions import NotFoundException
 from src.auth.service import UserAuthService
 from src.auth.dependencies import get_user_auth_service, get_current_user_from_token
 from src.auth.schemas import CreateUser, ShowUser, Token, LoginForm
 from src.auth.responses import auth_signup_responses, auth_signin_responses
-
 from src.auth.jwt import JwtToken
 from src.util.email_util import Email
 
@@ -40,12 +39,7 @@ async def login_for_access_token(
     form_data: LoginForm,
     user_auth_service: UserAuthService = Depends(get_user_auth_service),
 ):
-    user = await user_auth_service.authentificate_user(
-        form_data.login, form_data.password
-    )
-    if not user:
-        raise InvalidCredentials(detail="Incorrect login or password")
-
+    await user_auth_service.authentificate_user(form_data.login, form_data.password)
     access_token = JwtToken.create_access_token(data={"sub": form_data.login})
 
     return {"access_token": access_token, "token_type": "bearer"}
