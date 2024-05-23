@@ -8,7 +8,6 @@ class JwtToken:
 
     TOKEN_TYPE_FIELD: str = "type"
     ACCESS_TOKEN_TYPE: str = "access"
-    REFRESH_TOKEN_TYPE: str = "refresh"
 
     @staticmethod
     def _encode(data: dict, expires_delta: timedelta) -> str:
@@ -45,12 +44,14 @@ class JwtToken:
         encoded_access_jwt = cls._encode(data=payload, expires_delta=expire)
         return encoded_access_jwt
 
-    @classmethod
-    def create_refresh_token(cls, data: dict) -> str:
-        payload = {cls.TOKEN_TYPE_FIELD: cls.REFRESH_TOKEN_TYPE}
-        payload.update(data)
-        expire = datetime.now(UTC) + timedelta(
-            days=settings.jwt.REFRESH_TOKEN_EXPIRE_DAYS
-        )
-        encoded_refresh_jwt = cls._encode(data=payload, expires_delta=expire)
-        return encoded_refresh_jwt
+
+##############THINK THINK THINK#############
+# @classmethod
+# def create_refresh_token(cls, data: dict) -> str:
+#     payload = {cls.TOKEN_TYPE_FIELD: cls.REFRESH_TOKEN_TYPE}
+#     payload.update(data)
+#     expire = datetime.now(UTC) + timedelta(
+#         days=settings.jwt.REFRESH_TOKEN_EXPIRE_DAYS
+#     )
+#     encoded_refresh_jwt = cls._encode(data=payload, expires_delta=expire)
+#     return encoded_refresh_jwt
