@@ -7,12 +7,15 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.config import settings
 from src.auth.routers import auth_router
 from src.tasks.routers import tasks_router
 from src.tasks_group.routers import tasks_group_router
 from src.users.routers import users_router
 
 app = FastAPI(title="Reminder")
+
+settings.log.configure_logging()
 
 # Define origins that you want to allow
 origins = [
