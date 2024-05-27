@@ -67,11 +67,15 @@ class RedisSettings(BaseSettings):
 
 class LoggingSettings(BaseSettings):
 
-    LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    LOG_LEVEL: str = "DEBUG"
-    LOG_FILE: str = "logs.log"
+    FORMAT: str
+    LEVEL: str
+    FILE: str
     IGNORED_LOGGERS: list[str] = ["passlib", "asyncio"]
     IGNORED_LOGGERS_LEVEL: str = "ERROR"
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
+    )
 
     def configure_logging(self):
         dictConfig(
@@ -80,21 +84,21 @@ class LoggingSettings(BaseSettings):
                 "disable_existing_loggers": False,
                 "formatters": {
                     "default": {
-                        "format": self.LOG_FORMAT,
+                        "format": self.FORMAT,
                     },
                 },
                 "handlers": {
                     "file": {
-                        "level": self.LOG_LEVEL,
+                        "level": self.LEVEL,
                         "formatter": "default",
                         "class": "logging.FileHandler",
-                        "filename": self.LOG_FILE,
+                        "filename": self.FILE,
                     },
                 },
                 "loggers": {
-                    "": {
+                    "__main__": {
                         "handlers": ["file"],
-                        "level": self.LOG_LEVEL,
+                        "level": self.LEVEL,
                         "propagate": False,
                     },
                 },
