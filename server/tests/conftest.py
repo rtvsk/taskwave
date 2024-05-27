@@ -1,7 +1,6 @@
 import pytest
 import logging
 
-from datetime import timedelta
 from typing import AsyncGenerator
 from collections import namedtuple
 
@@ -22,12 +21,6 @@ from src.users.models import User
 from src.tasks_group.models import TasksGroup
 from src.tasks.models import Task
 
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename="test_log",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 logger = logging.getLogger(__name__)
 
@@ -69,10 +62,10 @@ TEST_TASK = {
 
 @pytest.fixture(autouse=True, scope="session")
 async def prepare_database():
-    logger.info("Preparing database...")
+    logger.debug("Preparing database...")
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    logger.info("Database tables created successfully.")
+    logger.debug("Database tables created successfully.")
 
     for model, data in (
         (User, TEST_USER),
@@ -81,23 +74,23 @@ async def prepare_database():
     ):
         async with async_session_maker() as session:
             try:
-                logger.info(f"Inserting test in {model}...")
+                logger.debug(f"Inserting test in {model}...")
                 add_data = model(**data)
                 session.add(add_data)
                 await session.commit()
-                logger.info(f"Test {model} data inserted successfully.")
+                logger.debug(f"Test {model} data inserted successfully.")
             except Exception as e:
                 logger.error(f"Error inserting test: {e}")
                 await session.rollback()
                 logger.info("Rolled back transaction.")
-    logger.info("Database preparation complete.")
+    logger.debug("Database preparation complete.")
 
     yield
 
-    logger.info("Deleting database...")
+    logger.debug("Deleting database...")
     async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    logger.info("Database tables delete successfully.")
+    logger.debug("Database tables delete successfully.")
 
 
 @pytest.fixture(scope="session")
