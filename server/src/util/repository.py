@@ -2,8 +2,10 @@ from uuid import UUID
 import logging
 from typing import Any, TypeVar
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
+
 
 from src.database import Base
 from src.exceptions import BadRequestException, DatabaseException
@@ -29,7 +31,7 @@ class BaseRepository:
 
             await self.session.commit()
             return entity
-        except Exception as e:
+        except SQLAlchemyError as e:
             logger.error(f"Error save data in the database: {e}")
             raise DatabaseException
 
@@ -42,7 +44,7 @@ class BaseRepository:
                 select(self.model).where(and_(self.model.id == entity_id))
             )
             return result.scalar_one_or_none()
-        except Exception as e:
+        except SQLAlchemyError as e:
             logger.error(f"Error extracting from the database: {e}")
             raise DatabaseException
 
@@ -61,7 +63,7 @@ class BaseRepository:
                 return [entity[0] for entity in entities]
 
             return result.scalar_one_or_none()
-        except Exception as e:
+        except SQLAlchemyError as e:
             logger.error(f"Error extracting from the database: {e}")
             raise DatabaseException
 
@@ -84,7 +86,7 @@ class BaseRepository:
             await self.session.commit()
 
             return result.scalar_one_or_none()
-        except Exception as e:
+        except SQLAlchemyError as e:
             logger.error(f"Error updating data in the database: {e}")
             raise DatabaseException
 
@@ -97,6 +99,6 @@ class BaseRepository:
                 delete(self.model).where(self.model.id == entity_id)
             )
             await self.session.commit()
-        except Exception as e:
+        except SQLAlchemyError as e:
             logger.error(f"Error deleting in the database: {e}")
             raise DatabaseException
