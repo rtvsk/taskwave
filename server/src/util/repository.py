@@ -1,4 +1,5 @@
 from uuid import UUID
+import logging
 from typing import Any, TypeVar
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +9,8 @@ from src.database import Base
 from src.exceptions import BadRequestException, DatabaseException
 
 T = TypeVar("T", bound=Base)
+
+logger = logging.getLogger(__name__)
 
 
 class BaseRepository:
@@ -26,26 +29,28 @@ class BaseRepository:
 
             await self.session.commit()
             return entity
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error save data in the database: {e}")
             raise DatabaseException
 
     async def get_by_id(self, entity_id: UUID | int) -> T | None:
         """
-        Retrieve data from the database for the id
+        Extract data from the database for the id
         """
         try:
             result = await self.session.execute(
                 select(self.model).where(and_(self.model.id == entity_id))
             )
             return result.scalar_one_or_none()
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error extracting from the database: {e}")
             raise DatabaseException
 
     async def get_by_field(
         self, key: str, value: str, all: bool = False
     ) -> T | list[T] | None:
         """
-        Retrieve data from the database for the given key with the specified value
+        Extract data from the database for the given key with the specified value
         """
         try:
             result = await self.session.execute(
@@ -56,7 +61,8 @@ class BaseRepository:
                 return [entity[0] for entity in entities]
 
             return result.scalar_one_or_none()
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error extracting from the database: {e}")
             raise DatabaseException
 
     async def update(self, key: str, value: Any, playload: dict[str, Any]) -> T | None:
@@ -78,7 +84,8 @@ class BaseRepository:
             await self.session.commit()
 
             return result.scalar_one_or_none()
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error updating data in the database: {e}")
             raise DatabaseException
 
     async def delete(self, entity_id: UUID | int) -> None:
@@ -90,5 +97,6 @@ class BaseRepository:
                 delete(self.model).where(self.model.id == entity_id)
             )
             await self.session.commit()
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error deleting in the database: {e}")
             raise DatabaseException
