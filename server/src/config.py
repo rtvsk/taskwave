@@ -96,7 +96,7 @@ class LoggingSettings(BaseSettings):
                     },
                 },
                 "loggers": {
-                    "__main__": {
+                    "": {
                         "handlers": ["file"],
                         "level": self.LEVEL,
                         "propagate": False,
