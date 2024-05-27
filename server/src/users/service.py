@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from passlib.context import CryptContext
 from sqlalchemy import select, and_
@@ -9,6 +10,9 @@ from src.users.exceptions import UserAlreadyExists, UserNotFound
 
 from src.util.repository import BaseRepository
 from src.util.redis_util import RedisCache
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserService(BaseRepository):
@@ -43,6 +47,7 @@ class UserService(BaseRepository):
         password = user_dict.pop("password")
         user_dict["hashed_password"] = self._PWD_CONTEXT.hash(password)
 
+        logger.debug(f"Prepared data for creating user: {user_dict}")
         user = await self.save(user_dict)
 
         return user

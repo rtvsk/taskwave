@@ -1,3 +1,5 @@
+import logging
+from logging.config import dictConfig
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 
@@ -63,12 +65,61 @@ class RedisSettings(BaseSettings):
     )
 
 
+class LoggingSettings(BaseSettings):
+
+    FORMAT: str
+    LEVEL: str
+    FILE: str
+    IGNORED_LOGGERS: list[str] = ["passlib", "asyncio"]
+    IGNORED_LOGGERS_LEVEL: str = "ERROR"
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
+    )
+
+    def configure_logging(self):
+        dictConfig(
+            {
+                "version": 1,
+                "disable_existing_loggers": False,
+                "formatters": {
+                    "default": {
+                        "format": self.FORMAT,
+                    },
+                },
+                "handlers": {
+                    "file": {
+                        "level": self.LEVEL,
+                        "formatter": "default",
+                        "class": "logging.FileHandler",
+                        "filename": self.FILE,
+                    },
+                },
+                "loggers": {
+                    "": {
+                        "handlers": ["file"],
+                        "level": self.LEVEL,
+                        "propagate": False,
+                    },
+                },
+            }
+        )
+
+        for log in self.IGNORED_LOGGERS:
+            self._set_level(log, self.IGNORED_LOGGERS_LEVEL)
+
+    @staticmethod
+    def _set_level(logger: str, level: str):
+        logging.getLogger(logger).setLevel(level)
+
+
 class Settings(BaseSettings):
     smtp: SMTPSettings = SMTPSettings()
     db: DatabaseSettings = DatabaseSettings()
     test_db: TestDatabaseSettings = TestDatabaseSettings()
     jwt: JWTSettings = JWTSettings()
     redis: RedisSettings = RedisSettings()
+    log: LoggingSettings = LoggingSettings()
 
 
 settings = Settings()
