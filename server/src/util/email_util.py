@@ -8,12 +8,6 @@ from src.config import settings
 from src.users.models import User
 from src.auth.jwt import JwtToken
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    filename="email_log",
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +22,7 @@ class Email:
     ) -> None:
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                logger.info(f"Preparing mail from {cls.__EMAIL}...")
+                logger.debug(f"Preparing mail from...")
                 server.login(cls.__EMAIL, cls.__PASSWORD)
                 email = EmailMessage()
                 email["Subject"] = subject
@@ -37,10 +31,10 @@ class Email:
 
                 email.set_content(template, subtype=subtype)
                 server.send_message(email)
-                logger.info(f"Mail send")
+                logger.debug(f"Mail send")
 
         except Exception as e:
-            logger.debug(f"Failed to send email: {e}")
+            logger.error(f"Failed to send email: {e}")
 
     @classmethod
     async def send_verify_email(cls, recipient: User) -> None:
