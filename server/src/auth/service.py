@@ -23,6 +23,6 @@ class UserAuthService(UserService):
             raise InvalidCredentials(detail="Incorrect login or password")
 
     async def verified_user(self, current_user: User) -> None:
-        await self.update_user("id", current_user.id, {"is_verified": True})
+        await self.update("id", current_user.id, {"is_verified": True})
 
         RedisCache.delete_cache(f"user_login:{current_user.login}")
