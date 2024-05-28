@@ -1,14 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { TaskGroup } from '../taskGroup/taskGroupSlice';
-
 interface ModalState<T> {
     name: string | null;
     data: null | T;
 }
 
-const initialState: ModalState<TaskGroup> = {
+const initialState: ModalState<any> = {
     name: null,
     data: null,
 };
@@ -17,7 +15,7 @@ export const modalSlice = createSlice({
     name: 'modal',
     initialState,
     reducers: {
-        set: (state, action: PayloadAction<ModalState<TaskGroup>>) => {
+        set: (state, action: PayloadAction<ModalState<any>>) => {
             state.name = action.payload.name;
             state.data = action.payload.data;
         },

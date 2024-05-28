@@ -1,24 +1,21 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useMemo, Fragment } from 'react';
+import { useEffect, useMemo } from 'react';
 import Button from '@mui/material/Button';
-import { Box, Typography, Divider, IconButton } from '@mui/material';
-import EditNoteIcon from '@mui/icons-material/EditNote';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { Box, Typography } from '@mui/material';
+// eslint-disable-next-line import/no-unresolved
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 import { globalIsLoadingSelector } from '../slices/global/selectors';
 import { Spinner } from '../components/spinner/Spinner';
 import { isAuthedSelector } from '../slices/user/selectors';
 import { taskGroupsSelector } from '../slices/taskGroup/selectors';
-import { fetchTaskGroups } from '../actions/fetchTaskGroups';
+import { fetchTaskGroups } from '../actions/taskGroups/fetchTaskGroups';
 import withContainerWrapper from '../hocs/withContainerWrapper';
-import { deleteTaskGroup } from '../actions/deleteTaskGroup';
 import { AppDispatch } from '../store';
 import { modalActions } from '../slices/modal/modalSlice';
-import {
-    addTaskGroupModalName,
-    editTaskGroupModalName,
-} from '../constants/constants';
+import { addTaskGroupModalName } from '../constants/constants';
+
+import { TaskGroup } from './TaskGroup';
 
 const SimpleTaskGroups = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -37,16 +34,18 @@ const SimpleTaskGroups = () => {
         }
     }, [isAuthed, dispatch]);
 
-    const addButtonTitle = useMemo(() => {
+    const buttonAddTitle = useMemo(() => {
         if (!taskGroups.length) {
             return 'Add first one!';
         }
 
-        return 'Add +';
+        return 'Add taskgroup';
     }, [taskGroups]);
 
+    const isEmptyTaskGroups = Boolean(!taskGroups.length);
+
     const renderedTaskGroups = useMemo(() => {
-        if (!taskGroups.length) {
+        if (isEmptyTaskGroups) {
             return (
                 <Box
                     display={'flex'}
@@ -55,7 +54,7 @@ const SimpleTaskGroups = () => {
                 >
                     <Typography variant='h5'>Taskgroups</Typography>
                     <Button variant='contained' onClick={handleClickOpenAdd}>
-                        {addButtonTitle}
+                        {buttonAddTitle}
                     </Button>
                 </Box>
             );
@@ -71,76 +70,15 @@ const SimpleTaskGroups = () => {
                 >
                     <Typography variant='h5'>Taskgroups</Typography>
                     <Button variant='contained' onClick={handleClickOpenAdd}>
-                        {addButtonTitle}
+                        {buttonAddTitle}
                     </Button>
                 </Box>
                 {taskGroups.map((taskGroup) => (
-                    <Fragment key={taskGroup.id}>
-                        {' '}
-                        <Box
-                            display={'flex'}
-                            alignItems={'flex-start'}
-                            justifyContent={'space-between'}
-                        >
-                            <Box>
-                                <Typography
-                                    variant='h6'
-                                    color='text.primary'
-                                    align='left'
-                                >
-                                    {taskGroup.title}
-                                </Typography>
-                                {taskGroup.description && (
-                                    <Typography color='text.secondary'>
-                                        {taskGroup.description}
-                                    </Typography>
-                                )}
-                            </Box>
-                            <Box display={'flex'} gap={'6px'}>
-                                <IconButton
-                                    size='small'
-                                    onClick={() =>
-                                        dispatch(
-                                            modalActions.set({
-                                                name: editTaskGroupModalName,
-                                                data: taskGroup,
-                                            })
-                                        )
-                                    }
-                                >
-                                    <EditNoteIcon
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                        }}
-                                        color='primary'
-                                    />
-                                </IconButton>
-                                <IconButton
-                                    size='small'
-                                    onClick={() =>
-                                        dispatch(deleteTaskGroup(taskGroup.id))
-                                    }
-                                >
-                                    <DeleteForeverIcon
-                                        style={{
-                                            width: '30px',
-                                            height: '30px',
-                                        }}
-                                        color='error'
-                                    />
-                                </IconButton>
-                            </Box>
-                        </Box>
-                        <Divider
-                            variant='fullWidth'
-                            style={{ marginTop: '18px', marginBottom: '18px' }}
-                        />
-                    </Fragment>
+                    <TaskGroup key={taskGroup.id} {...taskGroup} />
                 ))}
             </>
         );
-    }, [taskGroups, addButtonTitle, dispatch]);
+    }, [taskGroups, buttonAddTitle, handleClickOpenAdd]);
 
     if (isLoadingGlobal) {
         return <Spinner />;

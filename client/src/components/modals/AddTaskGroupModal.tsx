@@ -16,7 +16,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { modalSelector } from '../../slices/modal/selectors';
 import { AppDispatch } from '../../store';
 import { addTaskGroupModalName } from '../../constants/constants';
-import { addTaskGroup } from '../../actions/addTaskGroup';
+import { addTaskGroup } from '../../actions/taskGroups/addTaskGroup';
 import { modalActions } from '../../slices/modal/modalSlice';
 
 export const AddTaskGroupModal = memo(() => {
@@ -79,6 +79,7 @@ export const AddTaskGroupModal = memo(() => {
                     <DatePicker
                         format='DD.MM.YYYY'
                         onChange={(value) =>
+                            // @ts-expect-error asdasdasd
                             setDeadline(value?.format('YYYY-MM-DD'))
                         }
                     />

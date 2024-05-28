@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-export interface TaskGroup {
+export interface ITaskGroup {
     title: string;
     description: string | null;
     id: string;
@@ -9,7 +9,7 @@ export interface TaskGroup {
 }
 
 interface TaskGroupState {
-    taskGroups: TaskGroup[];
+    taskGroups: ITaskGroup[];
     isLoading: boolean;
 }
 
@@ -25,10 +25,10 @@ export const TaskGroupSlice = createSlice({
         setIsLoading: (state, action: PayloadAction<boolean>) => {
             state.isLoading = action.payload;
         },
-        setTaskGroups: (state, action: PayloadAction<TaskGroup[]>) => {
+        setTaskGroups: (state, action: PayloadAction<ITaskGroup[]>) => {
             state.taskGroups = action.payload;
         },
-        updateTaskGroup: (state, action: PayloadAction<TaskGroup>) => {
+        updateTaskGroup: (state, action: PayloadAction<ITaskGroup>) => {
             const updatedIdx = state.taskGroups.findIndex(
                 (tg) => tg.id === action.payload.id
             );
@@ -37,18 +37,23 @@ export const TaskGroupSlice = createSlice({
                 state.taskGroups[updatedIdx].title = action.payload.title;
                 state.taskGroups[updatedIdx].description =
                     action.payload.description;
+                state.taskGroups[updatedIdx].deadline = action.payload.deadline;
             }
             // state.taskGroups = action.payload;
         },
-        deleteTaskGroup: (state, action: PayloadAction<TaskGroup['id']>) => {
+        deleteTaskGroup: (state, action: PayloadAction<ITaskGroup['id']>) => {
             const filteredTaskGroups = state.taskGroups.filter(
                 (tg) => tg.id !== action.payload
             );
 
             state.taskGroups = filteredTaskGroups;
         },
-        addTaskGroup: (state, action: PayloadAction<TaskGroup>) => {
+        addTaskGroup: (state, action: PayloadAction<ITaskGroup>) => {
             state.taskGroups = [...state.taskGroups, action.payload];
+        },
+        reset: (state) => {
+            state.taskGroups = initialState.taskGroups;
+            state.isLoading = initialState.isLoading;
         },
     },
 });

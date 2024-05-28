@@ -8,18 +8,20 @@ import { toast } from 'react-toastify';
 import { isAuthedSelector, loginSelector } from '../../slices/user/selectors';
 import { userActions } from '../../slices/user/userSlice';
 import { Token } from '../../helpers/helpers';
+import { taskActions } from '../../slices/task/taskSlice';
+import { taskGroupActions } from '../../slices/taskGroup/taskGroupSlice';
 
 export const Header = () => {
     const isAuthed = useSelector(isAuthedSelector);
     const login = useSelector(loginSelector);
     const history = useHistory();
     const dispatch = useDispatch();
-    const { setAuth, setLogin } = userActions;
 
     const onLogout = () => {
         history.push('/sign-in');
-        dispatch(setAuth(false));
-        dispatch(setLogin(null));
+        dispatch(userActions.logout());
+        dispatch(taskActions.reset());
+        dispatch(taskGroupActions.reset());
         Token.delete();
         toast(`Вы вышли из приложения`, {
             type: 'info',

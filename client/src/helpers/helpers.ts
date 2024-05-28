@@ -36,3 +36,13 @@ export const getCurrentDateYMD = (date?: Date) => {
 
     return `${year}-${month}-${day}`;
 };
+
+export const convertDateYMDtoDMY = (dateString: string | null) => {
+    if (dateString === null) {
+        return null;
+    }
+
+    const [year, month, day] = dateString.split('-');
+
+    return `${day}.${month}.${year}`;
+};

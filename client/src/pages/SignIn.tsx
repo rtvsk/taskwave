@@ -17,7 +17,7 @@ import { useDispatch } from 'react-redux';
 
 import { LinkBehavior } from '../components/LinkBehavior';
 import { theme } from '../theme/theme';
-import { signin } from '../actions/signin';
+import { signin } from '../actions/auth/signin';
 
 function Copyright(props: any) {
     return (
