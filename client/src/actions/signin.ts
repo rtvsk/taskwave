@@ -16,10 +16,10 @@ export const signin = createAsyncThunk<
 
         const {
             data: { access_token },
-        } = await api.post<SigninResponse>('/auth/signin', restSigninData);
+        } = await api.post<SigninResponse>('/api/auth/signin', restSigninData);
         const {
             data: { login },
-        } = await api.get<MeResponse>('/users/me', {
+        } = await api.get<MeResponse>('/api/users/me', {
             headers: { Authorization: `Bearer ${access_token}` },
         });
         dispatch(setAuth(true));

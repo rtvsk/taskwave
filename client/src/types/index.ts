@@ -4,7 +4,7 @@ export type SigninResponse = {
 };
 
 export type MeResponse = {
-    id: string;
+    // id: string;
     login: string;
     firstname: string | null;
     lastname: string | null;

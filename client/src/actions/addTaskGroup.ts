@@ -8,7 +8,7 @@ import { modalActions } from '../slices/modal/modalSlice';
 
 export const addTaskGroup = createAsyncThunk<
     void,
-    { title: string; description: string }
+    { title: string; description: string; deadline: string | null }
 >('taskGroup/add', async (taskGroupData, { dispatch }): Promise<void> => {
     try {
         dispatch(taskGroupActions.setIsLoading(true));
@@ -19,12 +19,14 @@ export const addTaskGroup = createAsyncThunk<
         }
 
         const {
-            data: { id, title, description },
-        } = await api.post('/tasks', taskGroupData, {
+            data: { id, title, description, deadline },
+        } = await api.post('/api/tasks', taskGroupData, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        dispatch(taskGroupActions.addTaskGroup({ id, title, description }));
+        dispatch(
+            taskGroupActions.addTaskGroup({ id, title, description, deadline })
+        );
         toast('Woohoooo!', {
             type: 'success',
             autoClose: 2000,

@@ -17,7 +17,7 @@ export const deleteTaskGroup = createAsyncThunk<void, string>(
                 return;
             }
 
-            await api.delete(`/tasks/${id}`, {
+            await api.delete(`/api/tasks/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
