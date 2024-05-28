@@ -7,17 +7,19 @@ import { globalActions } from '../slices/global/globalSlice';
 import { api } from '../requests/requests';
 import { MeResponse } from '../types';
 import { Token } from '../helpers/helpers';
+import { taskActions } from '../slices/task/taskSlice';
+import { taskGroupActions } from '../slices/taskGroup/taskGroupSlice';
 
 export const useInitial = () => {
     const history = useHistory();
     const dispatch = useDispatch();
 
-    const { setAuth, setLogin } = userActions;
     const { setIsLoading } = globalActions;
 
     const resetUserAndGoSignin = () => {
-        dispatch(setAuth(false));
-        dispatch(setLogin(null));
+        dispatch(userActions.logout());
+        dispatch(taskActions.reset());
+        dispatch(taskGroupActions.reset());
         dispatch(setIsLoading(false));
         history.push('/sign-in');
     };
@@ -35,21 +37,19 @@ export const useInitial = () => {
             }
 
             try {
-                const {
-                    data: { login },
-                } = await api.get<MeResponse>('/api/users/me', {
+                const { data } = await api.get<MeResponse>('/api/users/me', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                if (login) {
-                    dispatch(setAuth(true));
-                    dispatch(setLogin(login));
+                if (data) {
+                    dispatch(userActions.setUser(data));
                     dispatch(setIsLoading(false));
                     history.push('/tasks');
                 }
             } catch (err) {
-                dispatch(setAuth(false));
-                dispatch(setLogin(null));
+                dispatch(userActions.logout());
+                dispatch(taskActions.reset());
+                dispatch(taskGroupActions.reset());
                 dispatch(setIsLoading(false));
                 history.push('/sign-in');
                 Token.delete();

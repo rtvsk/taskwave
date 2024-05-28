@@ -1,10 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-import { api } from '../requests/requests';
-import { Token } from '../helpers/helpers';
-import { taskGroupActions } from '../slices/taskGroup/taskGroupSlice';
-import { modalActions } from '../slices/modal/modalSlice';
+import { api } from '../../requests/requests';
+import { Token } from '../../helpers/helpers';
+import { taskGroupActions } from '../../slices/taskGroup/taskGroupSlice';
+import { modalActions } from '../../slices/modal/modalSlice';
 
 export const addTaskGroup = createAsyncThunk<
     void,

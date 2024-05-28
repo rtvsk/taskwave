@@ -11,23 +11,23 @@ import {
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers';
-import dayjs from 'dayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { modalSelector } from '../../slices/modal/selectors';
 import { AppDispatch } from '../../store';
-import { editTaskGroupModalName } from '../../constants/constants';
+import { addTaskModalName } from '../../constants/constants';
 import { modalActions } from '../../slices/modal/modalSlice';
-import { editTaskGroup } from '../../actions/taskGroups/editTaskGroup';
+import { addTask } from '../../actions/task/addTask';
 
-export const EditTaskGroupModal = memo(() => {
+export const AddTaskModal = memo(() => {
     const dispatch = useDispatch<AppDispatch>();
     const modalData = useSelector(modalSelector);
+    const [deadline, setDeadline] = useState(null);
 
-    const isOpen = modalData.name === editTaskGroupModalName;
+    const isOpen = modalData.name === addTaskModalName;
     const handleCloseModal = () => dispatch(modalActions.reset());
-    const id = modalData.data?.id || '';
-    const [deadline, setDeadline] = useState(modalData.data?.deadline || null);
+
+    const taskGroupId = modalData.data?.taskGroupId;
 
     return (
         <Dialog
@@ -45,51 +45,45 @@ export const EditTaskGroupModal = memo(() => {
                     const formJson = Object.fromEntries(
                         (formData as any).entries()
                     );
-                    const title = formJson['task-group-title'];
-                    const description = formJson['task-group-description'];
+                    const title = formJson['task-title'];
+                    const description = formJson['task-description'];
 
                     dispatch(
-                        editTaskGroup({ id, title, description, deadline })
+                        addTask({ title, description, deadline, taskGroupId })
                     );
                 },
             }}
         >
-            <DialogTitle>Editting a task group id</DialogTitle>
+            <DialogTitle>Adding a task</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    You can modify taskgroup's title and description right here
+                    Take your time! Stupid pigeon!
                 </DialogContentText>
                 <TextField
                     autoFocus
                     required
-                    defaultValue={modalData.data?.title || ''}
                     margin='dense'
-                    id='task-group-title'
-                    name='task-group-title'
+                    id='task-title'
+                    name='task-title'
                     label='Title'
-                    type='task-group-title'
+                    type='task-title'
                     fullWidth
                     variant='standard'
                 />
                 <TextField
                     margin='dense'
-                    defaultValue={modalData.data?.description || ''}
-                    id='task-group-description'
-                    name='task-group-description'
+                    id='task-description'
+                    name='task-description'
                     label='Description'
-                    type='task-group-description'
+                    type='task-description'
                     fullWidth
                     variant='standard'
                 />
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DatePicker
                         format='DD.MM.YYYY'
-                        defaultValue={
-                            modalData.data?.deadline
-                                ? dayjs(modalData.data?.deadline)
-                                : null
-                        }
                         onChange={(value) =>
+                            // @ts-expect-error asdasd
                             setDeadline(value?.format('YYYY-MM-DD'))
                         }
                     />

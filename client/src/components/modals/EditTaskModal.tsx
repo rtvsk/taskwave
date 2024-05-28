@@ -16,18 +16,24 @@ import dayjs from 'dayjs';
 
 import { modalSelector } from '../../slices/modal/selectors';
 import { AppDispatch } from '../../store';
-import { editTaskGroupModalName } from '../../constants/constants';
+import { editTaskModalName } from '../../constants/constants';
 import { modalActions } from '../../slices/modal/modalSlice';
-import { editTaskGroup } from '../../actions/taskGroups/editTaskGroup';
+import { ITask } from '../../slices/task/taskSlice';
+import { editTask } from '../../actions/task/editTask';
 
-export const EditTaskGroupModal = memo(() => {
+export const EditTaskModal = memo(() => {
     const dispatch = useDispatch<AppDispatch>();
     const modalData = useSelector(modalSelector);
-
-    const isOpen = modalData.name === editTaskGroupModalName;
-    const handleCloseModal = () => dispatch(modalActions.reset());
-    const id = modalData.data?.id || '';
     const [deadline, setDeadline] = useState(modalData.data?.deadline || null);
+
+    const isOpen = modalData.name === editTaskModalName;
+    const handleCloseModal = () => dispatch(modalActions.reset());
+
+    if (!isOpen) {
+        return null;
+    }
+
+    const { taskGroupId, id, is_done } = modalData.data as ITask;
 
     return (
         <Dialog
@@ -45,39 +51,46 @@ export const EditTaskGroupModal = memo(() => {
                     const formJson = Object.fromEntries(
                         (formData as any).entries()
                     );
-                    const title = formJson['task-group-title'];
-                    const description = formJson['task-group-description'];
+                    const title = formJson['task-title'];
+                    const description = formJson['task-description'];
 
                     dispatch(
-                        editTaskGroup({ id, title, description, deadline })
+                        editTask({
+                            taskGroupId,
+                            id,
+                            title,
+                            description,
+                            deadline,
+                            is_done,
+                        })
                     );
                 },
             }}
         >
-            <DialogTitle>Editting a task group id</DialogTitle>
+            <DialogTitle>Editting a task</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    You can modify taskgroup's title and description right here
+                    You can modify task's title and description right here
                 </DialogContentText>
                 <TextField
                     autoFocus
                     required
                     defaultValue={modalData.data?.title || ''}
                     margin='dense'
-                    id='task-group-title'
-                    name='task-group-title'
+                    id='task-title'
+                    name='task-title'
                     label='Title'
-                    type='task-group-title'
+                    type='task-title'
                     fullWidth
                     variant='standard'
                 />
                 <TextField
                     margin='dense'
                     defaultValue={modalData.data?.description || ''}
-                    id='task-group-description'
-                    name='task-group-description'
+                    id='task-description'
+                    name='task-description'
                     label='Description'
-                    type='task-group-description'
+                    type='task-description'
                     fullWidth
                     variant='standard'
                 />

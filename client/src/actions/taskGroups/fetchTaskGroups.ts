@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import { api } from '../requests/requests';
-import { Token } from '../helpers/helpers';
+import { api } from '../../requests/requests';
+import { Token } from '../../helpers/helpers';
 import {
-    TaskGroup,
+    ITaskGroup,
     taskGroupActions,
-} from '../slices/taskGroup/taskGroupSlice';
+} from '../../slices/taskGroup/taskGroupSlice';
 
 export const fetchTaskGroups = createAsyncThunk(
     'taskGroups/fetchTaskGroups',
@@ -17,7 +17,7 @@ export const fetchTaskGroups = createAsyncThunk(
                 return;
             }
 
-            const { data } = await api.get<TaskGroup[]>('/api/tasks', {
+            const { data } = await api.get<ITaskGroup[]>('/api/tasks', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             dispatch(taskGroupActions.setTaskGroups(data));

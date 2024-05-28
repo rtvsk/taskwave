@@ -1,17 +1,25 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 
-import { api } from '../requests/requests';
-import { Token } from '../helpers/helpers';
-import { taskGroupActions } from '../slices/taskGroup/taskGroupSlice';
-import { modalActions } from '../slices/modal/modalSlice';
+import { api } from '../../requests/requests';
+import { Token } from '../../helpers/helpers';
+import { taskGroupActions } from '../../slices/taskGroup/taskGroupSlice';
+import { modalActions } from '../../slices/modal/modalSlice';
 
 export const editTaskGroup = createAsyncThunk<
     void,
-    { id: string; title: string; description: string | null }
+    {
+        id: string;
+        title: string;
+        description: string | null;
+        deadline: string | null;
+    }
 >(
     'taskGroup/edit',
-    async ({ id, title, description = '' }, thunkApi): Promise<void> => {
+    async (
+        { id, title, description = '', deadline },
+        thunkApi
+    ): Promise<void> => {
         const { dispatch } = thunkApi;
 
         try {
@@ -24,14 +32,19 @@ export const editTaskGroup = createAsyncThunk<
 
             await api.patch(
                 `/api/tasks/${id}`,
-                { title, description },
+                { title, description, deadline },
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
 
             dispatch(
-                taskGroupActions.updateTaskGroup({ id, title, description })
+                taskGroupActions.updateTaskGroup({
+                    id,
+                    title,
+                    description,
+                    deadline,
+                })
             );
 
             toast('editted!', {

@@ -1,14 +1,9 @@
 cd server
 
-make venv
-py -m venv venv
-
-activate venv
-source ./venv/bin/activate
-
-
-install dependencies
-pip install -r requirements_my.txt
+poetry config virtualenvs.in-project true. (Для установки .env в проект)
+poetry install 
+poetry shell (для подключения) 
+exit (для отключения)
 
 run migrations
 alembic upgrade head
