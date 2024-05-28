@@ -1,14 +1,20 @@
 import smtplib
+import logging
 from datetime import timedelta
 
 from email.message import EmailMessage
 
-from src.config import SMTP_EMAIL, SMTP_PASSWORD
+from src.config import settings
 from src.users.models import User
-from src.auth.jwt import create_access_token
+from src.auth.jwt import JwtToken
+
+logger = logging.getLogger(__name__)
 
 
 class Email:
+
+    __EMAIL = settings.smtp.EMAIL
+    __PASSWORD = settings.smtp.PASSWORD.get_secret_value()
 
     @classmethod
     async def _send(
@@ -16,23 +22,27 @@ class Email:
     ) -> None:
         try:
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                logger.debug(f"Preparing mail from...")
+                server.login(cls.__EMAIL, cls.__PASSWORD)
                 email = EmailMessage()
                 email["Subject"] = subject
-                email["From"] = SMTP_EMAIL
+                email["From"] = cls.__EMAIL
                 email["To"] = email_to
 
                 email.set_content(template, subtype=subtype)
                 server.send_message(email)
+                logger.debug(f"Mail send")
 
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            logger.error(f"Failed to send email: {e}")
 
     @classmethod
     async def send_verify_email(cls, recipient: User) -> None:
         subject = "Verify email for Reminder"
 
-        verify_token = create_access_token({"sub": recipient.login}, timedelta(days=2))
+        verify_token = JwtToken.create_access_token(
+            {"sub": recipient.login}, timedelta(days=2)
+        )
 
         verify_email_template = f"""
                     <div>

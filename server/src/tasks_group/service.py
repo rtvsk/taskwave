@@ -16,30 +16,30 @@ class TasksGroupService(BaseRepository):
         tasks_group_dict = tasks_group_data.model_dump()
         tasks_group_dict["author_id"] = author_id
 
-        tasks_group = await self._save(tasks_group_dict)
+        tasks_group = await self.save(tasks_group_dict)
 
         return tasks_group
 
-    async def get_by_id(self, tasks_group_id: UUID) -> Optional[TasksGroup]:
-        tasks_group = await self._get_by_id(tasks_group_id)
+    async def get(self, tasks_group_id: UUID) -> Optional[TasksGroup]:
+        tasks_group = await self.get_by_id(tasks_group_id)
 
         return tasks_group
 
     async def get_all_from_user(self, author_id: UUID) -> Optional[list[TasksGroup]]:
-        tasks_groups = await self._get_by_field("author_id", author_id, all=True)
+        tasks_groups = await self.get_by_field("author_id", author_id, all=True)
 
         return tasks_groups
 
-    async def update(
+    async def update_tasks_group(
         self, tasks_group_id: UUID, tasks_group_data: UpdateTasksGroup
     ) -> TasksGroup:
         updated_task_group_params = tasks_group_data.model_dump(exclude_none=True)
 
-        updated_tasks_group = await self._update(
+        updated_tasks_group = await self.update(
             "id", tasks_group_id, updated_task_group_params
         )
 
         return updated_tasks_group
 
-    async def delete(self, tasks_group_id: UUID) -> None:
-        await self._delete(tasks_group_id)
+    async def delete_tasks_group(self, tasks_group_id: UUID) -> None:
+        await self.delete(tasks_group_id)
