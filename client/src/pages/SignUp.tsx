@@ -45,19 +45,17 @@ export const SignUp = () => {
             event.preventDefault();
             const data = new FormData(event.currentTarget);
             const signinData = {
-                firstname: data.get('firstname'),
-                lastname: data.get('lastname'),
                 login: data.get('login'),
-                email: data.get('email'),
                 password: data.get('password'),
+                email: data.get('email'),
             };
 
             try {
-                await api.post('api/users/signup', signinData);
+                await api.post('api/auth/signup', signinData);
                 toast(
                     'Успешно! Теперь вы можете войти в приложение ' +
-                    'под ником: ' +
-                    signinData.login,
+                        'под ником: ' +
+                        signinData.login,
                     {
                         type: 'success',
                         autoClose: 2000,
@@ -100,25 +98,6 @@ export const SignUp = () => {
                         noValidate
                         sx={{ mt: 1 }}
                     >
-                        <TextField
-                            margin='normal'
-                            required
-                            fullWidth
-                            id='firstname'
-                            label='Firstname'
-                            name='firstname'
-                            autoComplete='firstname'
-                            autoFocus
-                        />
-                        <TextField
-                            margin='normal'
-                            required
-                            fullWidth
-                            id='lastname'
-                            label='Lastname'
-                            name='lastname'
-                            autoComplete='lastname'
-                        />
                         <TextField
                             margin='normal'
                             required
@@ -172,7 +151,7 @@ export const SignUp = () => {
                                     href='/sign-up'
                                     variant='body2'
                                     component={LinkBehavior}
-                                    onClick={() => { }}
+                                    onClick={() => {}}
                                 >
                                     {'Зарегистрироваться'}
                                 </Link>

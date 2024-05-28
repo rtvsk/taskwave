@@ -17,7 +17,7 @@ export const fetchTaskGroups = createAsyncThunk(
                 return;
             }
 
-            const { data } = await api.get<TaskGroup[]>('/tasks', {
+            const { data } = await api.get<TaskGroup[]>('/api/tasks', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             dispatch(taskGroupActions.setTaskGroups(data));

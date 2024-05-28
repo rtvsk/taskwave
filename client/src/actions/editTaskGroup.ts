@@ -23,7 +23,7 @@ export const editTaskGroup = createAsyncThunk<
             }
 
             await api.patch(
-                `/tasks/${id}`,
+                `/api/tasks/${id}`,
                 { title, description },
                 {
                     headers: { Authorization: `Bearer ${token}` },

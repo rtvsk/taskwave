@@ -37,7 +37,7 @@ export const useInitial = () => {
             try {
                 const {
                     data: { login },
-                } = await api.get<MeResponse>('/users/me', {
+                } = await api.get<MeResponse>('/api/users/me', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 

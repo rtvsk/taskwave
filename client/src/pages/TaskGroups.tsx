@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import { Box, Typography, Divider, IconButton } from '@mui/material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 import { globalIsLoadingSelector } from '../slices/global/selectors';
 import { Spinner } from '../components/spinner/Spinner';
@@ -24,6 +25,7 @@ const SimpleTaskGroups = () => {
     const isLoadingGlobal = useSelector(globalIsLoadingSelector);
     const isAuthed = useSelector(isAuthedSelector);
     const taskGroups = useSelector(taskGroupsSelector);
+    const [parent] = useAutoAnimate();
 
     const handleClickOpenAdd = () => {
         dispatch(modalActions.set({ name: addTaskGroupModalName, data: null }));
@@ -144,7 +146,7 @@ const SimpleTaskGroups = () => {
         return <Spinner />;
     }
 
-    return <div>{renderedTaskGroups}</div>;
+    return <div ref={parent}>{renderedTaskGroups}</div>;
 };
 
 export const TaskGroups = withContainerWrapper(SimpleTaskGroups);

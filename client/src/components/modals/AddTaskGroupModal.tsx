@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     Button,
@@ -9,6 +9,9 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import { modalSelector } from '../../slices/modal/selectors';
 import { AppDispatch } from '../../store';
@@ -19,6 +22,7 @@ import { modalActions } from '../../slices/modal/modalSlice';
 export const AddTaskGroupModal = memo(() => {
     const dispatch = useDispatch<AppDispatch>();
     const modalData = useSelector(modalSelector);
+    const [deadline, setDeadline] = useState(null);
 
     const isOpen = modalData.name === addTaskGroupModalName;
     const handleCloseModal = () => dispatch(modalActions.reset());
@@ -42,7 +46,7 @@ export const AddTaskGroupModal = memo(() => {
                     const title = formJson['task-group-title'];
                     const description = formJson['task-group-description'];
 
-                    dispatch(addTaskGroup({ title, description }));
+                    dispatch(addTaskGroup({ title, description, deadline }));
                 },
             }}
         >
@@ -71,6 +75,14 @@ export const AddTaskGroupModal = memo(() => {
                     fullWidth
                     variant='standard'
                 />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                        format='DD.MM.YYYY'
+                        onChange={(value) =>
+                            setDeadline(value?.format('YYYY-MM-DD'))
+                        }
+                    />
+                </LocalizationProvider>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCloseModal}>Cancel</Button>

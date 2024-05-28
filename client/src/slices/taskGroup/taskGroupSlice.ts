@@ -5,6 +5,7 @@ export interface TaskGroup {
     title: string;
     description: string | null;
     id: string;
+    deadline: string | null;
 }
 
 interface TaskGroupState {
