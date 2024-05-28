@@ -49,7 +49,7 @@ class Email:
                         <h3> Hello, sweety</h3>
                         <br>
                         <p>Click on the button</p>
-                        <a href="http://localhost:8000/api/auth/verification/{verify_token}">
+                        <a href="{settings.client.ORIGIN}/api/auth/verification/{verify_token}">
                             Verify email
                         </a>
                     </div>

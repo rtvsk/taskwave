@@ -15,23 +15,20 @@ from src.users.routers import users_router
 
 app = FastAPI(title="Reminder")
 
+# Setting up logging
 settings.log.configure_logging()
 
-# Define origins that you want to allow
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
 
 # Add middleware to handle CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.client.ORIGIN,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"],
 )
 
+# Add routers
 routers = (
     auth_router,
     tasks_router,

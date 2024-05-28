@@ -23,6 +23,20 @@ class DatabaseSettings(BaseSettings):
         )
 
 
+class ClientSettings(BaseSettings):
+
+    HOST: str
+    PORT: str
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="CLIENT_"
+    )
+
+    @property
+    def ORIGIN(self):
+        return f"http://{self.HOST}:{self.PORT}"
+
+
 class TestDatabaseSettings(DatabaseSettings):
 
     model_config = SettingsConfigDict(
@@ -116,6 +130,7 @@ class LoggingSettings(BaseSettings):
 class Settings(BaseSettings):
     smtp: SMTPSettings = SMTPSettings()
     db: DatabaseSettings = DatabaseSettings()
+    client: ClientSettings = ClientSettings()
     test_db: TestDatabaseSettings = TestDatabaseSettings()
     jwt: JWTSettings = JWTSettings()
     redis: RedisSettings = RedisSettings()

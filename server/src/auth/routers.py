@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 
 from src.exceptions import NotFoundException
@@ -8,6 +9,8 @@ from src.auth.responses import auth_signup_responses, auth_signin_responses
 from src.auth.jwt import JwtToken
 from src.util.email_util import Email
 
+
+logger = logging.getLogger(__name__)
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -54,9 +57,12 @@ async def email_verivication(
         if user.is_verified:
             message = "The email has already been confirmed"
         else:
+            logging.debug("Run def verified_user")
             await user_auth_service.verified_user(user)
+            logging.debug("User successfully verified")
             message = "The email has been successfully confirmed"
-    except:
+    except Exception as e:
+        logging.error(f"Except: {e}")
         raise NotFoundException(detail="Invalid link")
     else:
         return {"message": message}
