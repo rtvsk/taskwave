@@ -97,9 +97,7 @@ class LoggingSettings(BaseSettings):
                 "version": 1,
                 "disable_existing_loggers": False,
                 "formatters": {
-                    "default": {
-                        "format": self.FORMAT,
-                    },
+                    "default": {"format": self.FORMAT, "datefmt": "%Y-%m-%d %H:%M:%S"},
                 },
                 "handlers": {
                     "file": {
