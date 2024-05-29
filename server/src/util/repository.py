@@ -1,6 +1,6 @@
 from uuid import UUID
 import logging
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Optional, Union
 
 from sqlalchemy import select, and_, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,14 +16,22 @@ logger = logging.getLogger(__name__)
 
 
 class BaseRepository:
-    model: type[T]
+    """
+    Base repository providing generic database CRUD operations.
+    """
 
-    def __init__(self, session: AsyncSession) -> None:
+    model: type[T] = None
+
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def save(self, playload: dict[str, Any]) -> T:
         """
-        Save data in the database
+        Save a new entity in the database.
+
+        :param payload: data for the new entity.
+        :return: the saved entity.
+        :raises DatabaseException: if a database error occurs.
         """
         try:
             entity = self.model(**playload)
@@ -35,9 +43,13 @@ class BaseRepository:
             logger.error(f"Error save data in the database: {e}")
             raise DatabaseException
 
-    async def get_by_id(self, entity_id: UUID | int) -> T | None:
+    async def get_by_id(self, entity_id: Union[UUID, int]) -> Optional[T]:
         """
-        Extract data from the database for the id
+        Retrieve an entity by id.
+
+        :param entity_id: the id of the entity.
+        :return: entity if found, else None.
+        :raises DatabaseException: if a database error occurs.
         """
         try:
             result = await self.session.execute(
@@ -50,9 +62,15 @@ class BaseRepository:
 
     async def get_by_field(
         self, key: str, value: str, all: bool = False
-    ) -> T | list[T] | None:
+    ) -> Union[T, list[T]]:
         """
-        Extract data from the database for the given key with the specified value
+        Retrieve entities by a specified field.
+
+        :param key: field name.
+        :param value: field value.
+        :param all: whether to retrieve all matching entities. Defaults to `False`
+        :return: a list of entities if `all` is True, else a single entity or None.
+        :raises DatabaseException: if a database error occurs.
         """
         try:
             result = await self.session.execute(
@@ -67,9 +85,18 @@ class BaseRepository:
             logger.error(f"Error extracting from the database: {e}")
             raise DatabaseException
 
-    async def update(self, key: str, value: Any, playload: dict[str, Any]) -> T | None:
+    async def update(
+        self, key: str, value: Any, playload: dict[str, Any]
+    ) -> Optional[T]:
         """
-        Update data in the database for the given key with the specified value
+        Update an entity in the database.
+
+        :param key: field name to search for the entity.
+        :param value: field value to search for the entity.
+        :param payload: data for updating the entity.
+        :return: The updated entity if found, else None.
+        :raises BadRequestException: If no update parameters are provided.
+        :raises DatabaseException: If a database error occurs.
         """
         if not playload:
             raise BadRequestException(
@@ -90,9 +117,12 @@ class BaseRepository:
             logger.error(f"Error updating data in the database: {e}")
             raise DatabaseException
 
-    async def delete(self, entity_id: UUID | int) -> None:
+    async def delete(self, entity_id: Union[UUID, int]) -> None:
         """
-        Delete data from the database by the id
+        Delete an entity from the database by id.
+
+        :param entity_id: the id of the entity.
+        :raises DatabaseException: if a database error occurs.
         """
         try:
             await self.session.execute(
