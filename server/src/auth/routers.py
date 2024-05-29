@@ -7,7 +7,7 @@ from src.auth.dependencies import get_user_auth_service, get_current_user_from_t
 from src.auth.schemas import CreateUser, ShowUser, Token, LoginForm
 from src.auth.responses import auth_signup_responses, auth_signin_responses
 from src.auth.jwt import JwtToken
-from src.util.email_util import Email
+from src.util.email_util import email
 
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ async def create_user(
     user_auth_service: UserAuthService = Depends(get_user_auth_service),
 ):
     user = await user_auth_service.create(user_data=new_user)
-    background_task.add_task(Email.send_verify_email, user)
+    background_task.add_task(email.send_verify_email, user)
 
     return user
 

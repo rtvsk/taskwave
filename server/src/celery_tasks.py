@@ -6,7 +6,7 @@ from src.database import async_session_maker
 from src.celeryconfig import app
 from src.users.models import User
 from src.tasks_group.models import TasksGroup
-from src.util.email_util import Email
+from src.util.email_util import email
 
 
 async def get_users_from_db() -> list[User]:
@@ -51,7 +51,7 @@ async def send_reminder_letter() -> None:
     user_task = await create_bond()
     for user, task in user_task.items():
         try:
-            await Email.send_test_reminder_letter(user, task)
+            await email.send_reminder_letter(user, task)
 
         except Exception as e:
             print(f"Something wrong: {e}")
