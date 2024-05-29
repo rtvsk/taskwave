@@ -1,4 +1,5 @@
 import logging
+from typing import Union, Optional
 from datetime import timedelta, datetime, UTC
 from jose import jwt
 
@@ -9,12 +10,15 @@ logger = logging.getLogger(__name__)
 
 
 class JwtToken:
-
-    TOKEN_TYPE_FIELD: str = "type"
-    ACCESS_TOKEN_TYPE: str = "access"
+    """
+    Utility class for handling JWT operations.
+    """
 
     @staticmethod
     def _encode(data: dict, expires_delta: timedelta) -> str:
+        """
+        Encode data into a JWT token with an expiration time.
+        """
         to_encode = data.copy()
         to_encode.update({"exp": expires_delta})
         encoded = jwt.encode(
@@ -25,7 +29,10 @@ class JwtToken:
         return encoded
 
     @classmethod
-    def decode(cls, token: str | bytes) -> dict:
+    def decode(cls, token: Union[str, bytes]) -> dict:
+        """
+        Decode a JWT token.
+        """
         decoded = jwt.decode(
             token=token,
             key=settings.jwt.SECRET_KEY.get_secret_value(),
@@ -35,11 +42,16 @@ class JwtToken:
 
     @classmethod
     def create_access_token(
-        cls, data: dict, expires_delta: timedelta | None = None
+        cls, data: dict, expires_delta: Optional[timedelta] = None
     ) -> str:
+        """
+        Create a new access token.
+
+        If not expiration time delta for the token provided,
+        the default expiration from settings will be used.
+        """
         logger.debug("Creating token...")
-        payload = {cls.TOKEN_TYPE_FIELD: cls.ACCESS_TOKEN_TYPE}
-        payload.update(data)
+        payload = data.copy()
         if expires_delta:
             expire = datetime.now(UTC) + expires_delta
         else:
