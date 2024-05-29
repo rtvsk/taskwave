@@ -77,8 +77,9 @@ class BaseRepository:
                 select(self.model).where(and_(getattr(self.model, key) == value))
             )
             if all:
-                entities = result.fetchall()
-                return [entity[0] for entity in entities]
+                entities = result.scalars().all()
+                logger.debug(f"Entities from {value}: {entities}")
+                return entities
 
             return result.scalar_one_or_none()
         except SQLAlchemyError as e:
