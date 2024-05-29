@@ -63,6 +63,8 @@ class SMTPSettings(BaseSettings):
 
     EMAIL: str
     PASSWORD: SecretStr
+    HOST: str
+    PORT: int
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
