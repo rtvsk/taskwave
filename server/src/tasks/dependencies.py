@@ -22,7 +22,7 @@ async def valid_task_id(
     """
     Validate if a task with the given id exists.
 
-    If task doesn't exist, TaskNotFound error is raised.
+    If task doesn't exist, TaskNotFound exception is raised.
     """
     task = await task_service.get(task_id)
     if not task:
@@ -39,7 +39,7 @@ async def valid_tasks_group(
     Validate if a task belongs to a given tasks group.
 
     If task doesn't belongs for the given tasks group,
-    TaskNotFound error is raised.
+    TaskNotFound exception is raised.
     """
     if task.tasks_group_id != tasks_group.id:
         raise TaskNotFound

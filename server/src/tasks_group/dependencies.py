@@ -24,7 +24,7 @@ async def valid_tasks_group_id(
     """
     Validate if a tasks group with the given id exists.
 
-    If tasks group doesn't exist, TasksGroupNotFound error is raised.
+    If tasks group doesn't exist, TasksGroupNotFound exception is raised.
     """
     tasks_group = await tasks_group_service.get(tasks_group_id)
     if not tasks_group:
@@ -41,7 +41,7 @@ async def valid_owned_tasks(
     Validate if a tasks group belongs to a given user.
 
     If tasks group doesn't belongs for the given user,
-    UserNotOwner error is raised.
+    UserNotOwner exception is raised.
     """
     if tasks_group.author_id != current_user.id:
         raise UserNotOwner
