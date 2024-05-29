@@ -2,7 +2,7 @@ from typing import Union
 from src.users.service import UserService
 from src.users.models import User
 from src.exceptions import InvalidCredentials
-from src.util.redis_util import cache_data, RedisCache
+from src.util.redis_util import cache_data, redis_cache
 
 
 class UserAuthService(UserService):
@@ -44,4 +44,4 @@ class UserAuthService(UserService):
         """
         await self.update("id", current_user.id, {"is_verified": True})
 
-        RedisCache.delete_cache(f"user_login:{current_user.login}")
+        redis_cache.delete(f"user_login:{current_user.login}")
