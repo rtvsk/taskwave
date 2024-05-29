@@ -22,20 +22,6 @@ class UpdateUser(BaseModel):
     lastname: str | None = None
     email: EmailStr | None = None
 
-    @field_validator("firstname")
-    def validate_firstname(cls, value):
-        if not re.compile(r"^[а-яА-Яa-zA-Z\-]+$").match(value):
-            raise UnprocessableException(
-                detail="Firstname should contains only letters"
-            )
-        return value
-
-    @field_validator("lastname")
-    def validate_lastname(cls, value):
-        if not re.compile(r"^[а-яА-Яa-zA-Z\-]+$").match(value):
-            raise UnprocessableException(detail="Lastname should contains only letters")
-        return value
-
 
 class DeletedUser(BaseModel):
     id: uuid.UUID
