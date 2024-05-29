@@ -12,21 +12,43 @@ logger = logging.getLogger(__name__)
 
 
 class Email:
+    """
+    Service class for sending emails.
+    """
 
-    __EMAIL = settings.smtp.EMAIL
-    __PASSWORD = settings.smtp.PASSWORD.get_secret_value()
+    def __init__(self, email: str, password: str, host: str, port: int):
+        """
+        Initialize the Email service with the necessary credentials and server details.
 
-    @classmethod
+        :param email: sender's email address.
+        :param password: sender's email password.
+        :param host: SMTP server host.
+        :param port: SMTP server port.
+        """
+        self.email = email
+        self.password = password
+        self.host = host
+        self.port = port
+
     async def _send(
-        cls, email_to: str, subject: str, template: str, subtype: str = "html"
-    ) -> None:
+        self, email_to: str, subject: str, template: str, subtype: str = "html"
+    ):
+        """
+        Send an email using the SMTP server.
+
+        :param email_to: recipient's email address.
+        :param subject: subject of the email.
+        :param template: HTML content of the email.
+        :param subtype: subtype of the email content. Default is "html"
+        :raises Exception: if sending email failed.
+        """
         try:
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            with smtplib.SMTP_SSL(self.host, self.port) as server:
                 logger.debug(f"Preparing mail from...")
-                server.login(cls.__EMAIL, cls.__PASSWORD)
+                server.login(self.email, self.password)
                 email = EmailMessage()
                 email["Subject"] = subject
-                email["From"] = cls.__EMAIL
+                email["From"] = self.email
                 email["To"] = email_to
 
                 email.set_content(template, subtype=subtype)
@@ -36,8 +58,10 @@ class Email:
         except Exception as e:
             logger.error(f"Failed to send email: {e}")
 
-    @classmethod
-    async def send_verify_email(cls, recipient: User) -> None:
+    async def send_verify_email(self, recipient: User):
+        """
+        Send a verification email to a user.
+        """
         subject = "Verify email for Reminder"
 
         verify_token = JwtToken.create_access_token(
@@ -55,24 +79,15 @@ class Email:
                     </div>
                 """
 
-        await cls._send(recipient.email, subject, verify_email_template)
+        await self._send(recipient.email, subject, verify_email_template)
 
-    @classmethod
-    async def send_test(cls, recipient: User) -> None:
-        subject = "Test"
+    async def send_reminder_letter(self, recipient: User, name) -> None:
+        """
+        Send a reminder email to a user.
 
-        test_template = f"""
-                    <div>
-                        <h3> Hello, sweety</h3>
-                        <br>
-                        <p>Check mailing with Celery</p>
-                    </div>
-                """
-
-        await cls._send(recipient.email, subject, test_template)
-
-    @classmethod
-    async def send_test_reminder_letter(cls, recipient: User, name) -> None:
+        :param recipient: user to send the reminder email to.
+        :param name: name of the task to remind the user about.
+        """
         subject = "Test"
 
         test_template = f"""
@@ -83,4 +98,12 @@ class Email:
                     </div>
                 """
 
-        await cls._send(recipient.email, subject, test_template)
+        await self._send(recipient.email, subject, test_template)
+
+
+email = Email(
+    settings.smtp.EMAIL,
+    settings.smtp.PASSWORD.get_secret_value(),
+    settings.smtp.HOST,
+    settings.smtp.PORT,
+)

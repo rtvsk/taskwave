@@ -63,6 +63,8 @@ class SMTPSettings(BaseSettings):
 
     EMAIL: str
     PASSWORD: SecretStr
+    HOST: str
+    PORT: int
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
@@ -97,9 +99,7 @@ class LoggingSettings(BaseSettings):
                 "version": 1,
                 "disable_existing_loggers": False,
                 "formatters": {
-                    "default": {
-                        "format": self.FORMAT,
-                    },
+                    "default": {"format": self.FORMAT, "datefmt": "%Y-%m-%d %H:%M:%S"},
                 },
                 "handlers": {
                     "file": {

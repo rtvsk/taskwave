@@ -1,45 +1,45 @@
 import asyncio
+import logging
 from sqlalchemy import select, and_
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, UTC, timedelta
+
 from src.database import async_session_maker
 from src.celeryconfig import app
 from src.users.models import User
 from src.tasks_group.models import TasksGroup
-from src.util.email_util import Email
+from src.util.email_util import email
 
 
-async def get_users_from_db() -> list[User]:
-    async with async_session_maker() as session:
-        result = await session.execute(
-            select(User).where(and_(User.is_active, User.is_verified))
-        )
-        users = result.fetchall()
-
-        return [user[0] for user in users]
+logger = logging.getLogger(__name__)
 
 
-async def get_tasksgroup_from_db() -> list[TasksGroup]:
-    async with async_session_maker() as session:
-        result = await session.execute(
-            select(TasksGroup).where(
-                and_(
-                    TasksGroup.deadline == datetime.now(UTC).date() + timedelta(days=3),
-                    TasksGroup.is_done == False,
-                )
+async def get_users_from_db(session: AsyncSession) -> list[User]:
+    result = await session.execute(
+        select(User).where(and_(User.is_active, User.is_verified))
+    )
+    users = result.scalars().all()
+    return users
+
+
+async def get_tasksgroup_from_db(session: AsyncSession) -> list[TasksGroup]:
+    result = await session.execute(
+        select(TasksGroup).where(
+            and_(
+                TasksGroup.deadline == datetime.now(UTC).date() + timedelta(days=3),
+                TasksGroup.is_done == False,
             )
         )
-        tasks_groups = result.fetchall()
-        print(tasks_groups)
+    )
+    tasks_groups = result.scalars().all()
+    return tasks_groups
 
-        return [tasks_group[0] for tasks_group in tasks_groups]
 
-
-async def create_bond():
-    tasks_groups = await get_tasksgroup_from_db()
+async def create_bond(session: AsyncSession) -> dict[User, str]:
+    tasks_groups = await get_tasksgroup_from_db(session)
     bond = {}
     if tasks_groups:
-        available_users = await get_users_from_db()
+        available_users = await get_users_from_db(session)
         for task in tasks_groups:
             for user in available_users:
                 if task.author_id == user.id:
@@ -48,13 +48,14 @@ async def create_bond():
 
 
 async def send_reminder_letter() -> None:
-    user_task = await create_bond()
-    for user, task in user_task.items():
-        try:
-            await Email.send_test_reminder_letter(user, task)
-
-        except Exception as e:
-            print(f"Something wrong: {e}")
+    async with async_session_maker() as session:
+        user_task = await create_bond(session)
+        for user, task in user_task.items():
+            try:
+                await email.send_reminder_letter(user, task)
+                logger.debug(f"Sent mail to {user.email} for task {task}")
+            except Exception as e:
+                logger.error(f"Failed to send email to {user.email}: {e}")
 
 
 @app.task
