@@ -36,7 +36,7 @@ async def valid_tasks_group(
     task: Task = Depends(valid_task_id),
 ):
     """
-    Validate if a task task belongs to a given tasks group.
+    Validate if a task belongs to a given tasks group.
 
     If task doesn't belongs for the given tasks group,
     TaskNotFound error is raised.
