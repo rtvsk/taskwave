@@ -63,7 +63,7 @@ class RedisCache:
 redis_cache = RedisCache(host=settings.redis.HOST, port=settings.redis.PORT, db=0)
 
 
-def cache_data(key: str, expire_time: Optional[int] = None):
+def cache_data(key: str, expire_time: Optional[int] = None) -> Callable:
     def decorator(func: Callable):
         @wraps(func)
         async def wrapper(*args, **kwargs):

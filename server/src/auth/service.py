@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 from src.users.service import UserService
 from src.users.models import User
 from src.exceptions import InvalidCredentials
@@ -11,7 +11,7 @@ class UserAuthService(UserService):
     """
 
     @cache_data("user_login", expire_time=600)
-    async def get_user_by_login(self, login: str) -> Union[User]:
+    async def get_user_by_login(self, login: str) -> Optional[User]:
         """
         Retrieve a user from database by login.
         """
