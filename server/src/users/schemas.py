@@ -2,9 +2,7 @@ import uuid
 import re
 
 from pydantic import BaseModel
-from pydantic import EmailStr, field_validator
-
-from src.exceptions import UnprocessableException
+from pydantic import EmailStr
 
 
 class ShowUser(BaseModel):
