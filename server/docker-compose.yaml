@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: python_app
+    build: ./
+    command: bash -c "poetry run alembic upgrade head && poetry run uvicorn src.main:app --port 8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - postgres
+
+  db:
+    image: postgres:15.7
+    container_name: postgres_app
+    environment:
+      POSTGRES_DB: reminder_db
+      POSTGRES_USER: reminder_user
+      POSTGRES_PASSWORD: reminder
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    volumes:
+      - python-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U reminder_user -d reminder_db"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - postgres
+
+volumes:
+  python-data:
+
+
+networks:
+  postgres:
+    driver: bridge

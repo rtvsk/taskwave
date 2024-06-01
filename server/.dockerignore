@@ -1,0 +1,6 @@
+.pytest_chache
+.venv
+.gitignore
+.DS_Store
+logs.log
+Dockerfile
