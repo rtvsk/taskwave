@@ -62,7 +62,7 @@ class Email:
         """
         Send a verification email to a user.
         """
-        subject = "Verify email for Reminder"
+        subject = "Verify email for Taskwave"
 
         verify_token = JwtToken.create_access_token(
             {"sub": recipient.login}, timedelta(days=2)

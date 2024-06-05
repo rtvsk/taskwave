@@ -13,7 +13,7 @@ from src.tasks.routers import tasks_router
 from src.tasks_group.routers import tasks_group_router
 from src.users.routers import users_router
 
-app = FastAPI(title="Reminder")
+app = FastAPI(title="Taskwave")
 
 # Setting up logging
 settings.log.configure_logging()
