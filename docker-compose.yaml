@@ -1,13 +1,30 @@
-version: '3.8'
-
 services:
+
+  client:
+    container_name: client_app
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - redis
+      - app
+    ports:
+      - "5173:5173"
+    networks:
+      - postgres
+
   app:
     container_name: python_app
-    build: ./
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    # env_file:
+    #   - path: ./server/.env
     command: bash -c "poetry run alembic upgrade head && poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
+      - redis
     ports:
       - "8000:8000"
     networks:
@@ -16,6 +33,9 @@ services:
   db:
     image: postgres:15.7
     container_name: postgres_app
+    # env_file:
+    #   - path: ./server/.env
+    #     required: true
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -36,6 +56,9 @@ services:
   redis:
     image: redis
     container_name: redis_app
+    # env_file:
+    #   - path: ./server/.env
+    #     required: true
     ports:
       - ${REDIS_PORT}:6379
     networks:

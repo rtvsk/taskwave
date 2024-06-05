@@ -22,7 +22,7 @@ settings.log.configure_logging()
 # Add middleware to handle CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.client.ORIGIN,
+    allow_origins=[settings.client.ORIGIN],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
     allow_headers=["*"],
