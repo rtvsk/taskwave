@@ -70,7 +70,7 @@ export const Header = () => {
             >
                 <Box maxWidth={'200px'}>
                     <Typography component='h1' variant='h6'>
-                        Reminder.su
+                        Taskwave.ru
                     </Typography>
                 </Box>
                 <Box

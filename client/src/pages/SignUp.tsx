@@ -29,7 +29,7 @@ function Copyright(props: any) {
         >
             {'Copyright © '}
             <Link color='inherit' href='https://mui.com/'>
-                Reminder.su
+                Taskwave.ru
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
