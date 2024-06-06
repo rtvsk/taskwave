@@ -1,0 +1,61 @@
+services:
+  app:
+    container_name: python_app
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    # env_file:
+    #   - path: ./server/.env
+    command: bash -c "poetry run alembic upgrade head && poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000"
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
+    networks:
+      - postgres
+
+  db:
+    image: postgres:15.7
+    container_name: postgres_app
+    # env_file:
+    #   - path: ./server/.env
+    #     required: true
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - python-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - postgres
+
+  redis:
+    image: redis
+    container_name: redis_app
+    # env_file:
+    #   - path: ./server/.env
+    #     required: true
+    ports:
+      - ${REDIS_PORT}:6379
+    networks:
+      - postgres
+    volumes:
+      - redis_data:/data
+
+volumes:
+  python-data:
+  redis_data:
+
+
+networks:
+  postgres:
+    driver: bridge
