@@ -4,8 +4,6 @@ from logging.config import dictConfig
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 
-ENV_FILE = os.getenv("ENV_FILE", "dev.env")
-
 
 class DatabaseSettings(BaseSettings):
 
@@ -16,7 +14,7 @@ class DatabaseSettings(BaseSettings):
     PASSWORD: SecretStr
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE, env_file_encoding="utf-8", extra="ignore", env_prefix="DB_"
+        env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="DB_"
     )
 
     @property
@@ -32,7 +30,7 @@ class ClientSettings(BaseSettings):
     PORT: str
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE,
+        env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
         env_prefix="CLIENT_",
@@ -46,7 +44,7 @@ class ClientSettings(BaseSettings):
 class TestDatabaseSettings(DatabaseSettings):
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE,
+        env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
         env_prefix="TEST_DB_",
@@ -61,7 +59,7 @@ class JWTSettings(BaseSettings):
     ALGORITHM: str
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE, env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
     )
 
 
@@ -73,7 +71,7 @@ class SMTPSettings(BaseSettings):
     PORT: int
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE, env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
     )
 
 
@@ -83,7 +81,7 @@ class RedisSettings(BaseSettings):
     PORT: str
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE,
+        env_file=".env",
         env_file_encoding="utf-8",
         env_prefix="REDIS_",
         extra="ignore",
@@ -99,7 +97,7 @@ class LoggingSettings(BaseSettings):
     IGNORED_LOGGERS_LEVEL: str = "ERROR"
 
     model_config = SettingsConfigDict(
-        env_file=ENV_FILE, env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
     )
 
     def configure_logging(self):
