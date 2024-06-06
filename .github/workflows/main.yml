@@ -30,7 +30,7 @@ jobs:
           rm -rf taskwave
           git clone git@github.com:rtvsk/taskwave.git
           cd /var/www/taskwave.ru/html/taskwave/webrtc
-          npm ci --verbose
+          npm install --verbose
           npm start
           # /var/www/taskwave.ru/html/taskwave/webrtc
           # git pull origin main

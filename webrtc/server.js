@@ -1,6 +1,7 @@
 
-const fs = require('fs');
-const https = require('https');
+// const fs = require('fs');
+// const https = require('https');
+const http = require('http');
 const express = require('express');
 const app = express();
 const socketio = require('socket.io');
@@ -10,17 +11,17 @@ app.use(express.static(__dirname))
 //we generated them with mkcert
 // $ mkcert create-ca
 // $ mkcert create-cert
-const key = fs.readFileSync('/home/taskwave_user/.ssh/local/localhost-key.pem');
-const cert = fs.readFileSync('/home/taskwave_user/.ssh/local/localhost.pem');
+// const key = fs.readFileSync('/home/taskwave_user/.ssh/local/localhost-key.pem');
+// const cert = fs.readFileSync('/home/taskwave_user/.ssh/local/localhost.pem');
 
 //we changed our express setup so we can use https
 //pass the key and cert to createServer on https
-const expressServer = https.createServer({ key, cert}, app);
+const expressServer = http.createServer({ key, cert}, app);
 //create our socket.io server... it will listen to our express port
 const io = socketio(expressServer,{
     cors: {
         origin: [
-            "https://localhost",
+            "http://localhost",
             "https://taskwave.ru",
             "https://www.taskwave.ru",
             // 'https://LOCAL-DEV-IP-HERE' //if using a phone or another computer
