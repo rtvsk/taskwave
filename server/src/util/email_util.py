@@ -81,12 +81,12 @@ class Email:
 
         await self._send(recipient.email, subject, verify_email_template)
 
-    async def send_reminder_letter(self, recipient: User, name) -> None:
+    async def send_reminder_letter(self, recipient: User, name: str) -> None:
         """
         Send a reminder email to a user.
 
         :param recipient: user to send the reminder email to.
-        :param name: name of the task to remind the user about.
+        :param name: name of the task or tasks to remind the user about.
         """
         subject = "Test"
 
@@ -94,7 +94,8 @@ class Email:
                     <div>
                         <h3> Hello, sweety. Don't forget</h3>
                         <br>
-                        <p>The deadline for completing the task {name} is in three days</p>
+                        <p>The deadline is in three days for:</p>
+                        <p>{name}</p>
                     </div>
                 """
 
