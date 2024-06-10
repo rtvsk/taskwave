@@ -1,7 +1,8 @@
 from celery import Celery
 from celery.schedules import crontab
+from src.config import settings
 
-app = Celery("tasks", broker="redis://localhost:6379/0")
+app = Celery("tasks", broker=settings.celery.BROKER_URL)
 
 
 app.conf.beat_schedule = {
