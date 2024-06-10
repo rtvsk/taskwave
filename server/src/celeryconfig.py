@@ -9,7 +9,7 @@ app = Celery(
 
 app.conf.beat_schedule = {
     "send_reminder_email_every_day": {
-        "task": "src.celery_tasks.send_letter",
+        "task": "src.celery_tasks.reminder_email",
         "schedule": crontab(minute=0, hour=0),
     },
 }
