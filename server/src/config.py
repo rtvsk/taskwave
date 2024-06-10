@@ -1,5 +1,4 @@
 import logging
-import os
 from logging.config import dictConfig
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
@@ -88,6 +87,19 @@ class RedisSettings(BaseSettings):
     )
 
 
+class CelerySettings(BaseSettings):
+
+    BROKER_URL: str
+    RESULT_BACKEND: str
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_prefix="CELERY_",
+        extra="ignore",
+    )
+
+
 class LoggingSettings(BaseSettings):
 
     FORMAT: str
@@ -141,6 +153,7 @@ class Settings(BaseSettings):
     test_db: TestDatabaseSettings = TestDatabaseSettings()
     jwt: JWTSettings = JWTSettings()
     redis: RedisSettings = RedisSettings()
+    celery: CelerySettings = CelerySettings()
     log: LoggingSettings = LoggingSettings()
 
 
