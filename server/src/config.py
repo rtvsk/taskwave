@@ -1,5 +1,4 @@
 import logging
-import os
 from logging.config import dictConfig
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
@@ -91,6 +90,7 @@ class RedisSettings(BaseSettings):
 class CelerySettings(BaseSettings):
 
     BROKER_URL: str
+    RESULT_BACKEND: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
