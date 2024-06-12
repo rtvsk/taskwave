@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, status
 
+from src.responses import InvalidCredentialsException, ValidationException
 from src.auth.dependencies import get_current_user_from_token
+from src.tasks_group.responses import TaskGroupNotFoundException, UserNotOwnerException
 from src.tasks_group.models import TasksGroup
 from src.tasks_group.schemas import CreateTasksGroup, ShowTasksGroup, UpdateTasksGroup
 from src.tasks_group.service import TasksGroupService
@@ -16,13 +18,7 @@ tasks_group_router = APIRouter(prefix="/tasks", tags=["Tasks_group"])
     status_code=status.HTTP_200_OK,
     response_model=list[ShowTasksGroup],
     responses={
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            }
-        },
+        status.HTTP_401_UNAUTHORIZED: {"model": InvalidCredentialsException},
     },
 )
 async def users_tasks_group(
@@ -37,18 +33,8 @@ async def users_tasks_group(
     status_code=status.HTTP_201_CREATED,
     response_model=ShowTasksGroup,
     responses={
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            },
-        },
-        422: {
-            "content": {
-                "application/json": {"example": {"detail": "Validation error mesage"}}
-            },
-        },
+        status.HTTP_401_UNAUTHORIZED: {"model": InvalidCredentialsException},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationException},
     },
 )
 async def create_tasks_group(
@@ -66,35 +52,10 @@ async def create_tasks_group(
     status_code=status.HTTP_200_OK,
     response_model=ShowTasksGroup,
     responses={
-        400: {
-            "content": {
-                "application/json": {
-                    "example": {
-                        "detail": "At least one parameter for tasks group update info should be provided"
-                    }
-                }
-            },
-        },
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            },
-        },
-        404: {
-            "content": {
-                "application/json": {"example": {"detail": "Tasks group not found"}}
-            },
-        },
-        406: {
-            "content": {"application/json": {"example": {"detail": "User not owner"}}},
-        },
-        422: {
-            "content": {
-                "application/json": {"example": {"detail": "Validation error mesage"}}
-            },
-        },
+        status.HTTP_401_UNAUTHORIZED: {"model": InvalidCredentialsException},
+        status.HTTP_404_NOT_FOUND: {"model": TaskGroupNotFoundException},
+        status.HTTP_406_NOT_ACCEPTABLE: {"model": UserNotOwnerException},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationException},
     },
 )
 async def edit_tasks_group(
@@ -111,21 +72,9 @@ async def edit_tasks_group(
     "/{tasks_group_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
-        401: {
-            "content": {
-                "application/json": {
-                    "example": {"detail": "Could not validate credentials"}
-                }
-            },
-        },
-        404: {
-            "content": {
-                "application/json": {"example": {"detail": "Tasks group not found"}}
-            },
-        },
-        406: {
-            "content": {"application/json": {"example": {"detail": "User not owner"}}},
-        },
+        status.HTTP_401_UNAUTHORIZED: {"model": InvalidCredentialsException},
+        status.HTTP_404_NOT_FOUND: {"model": TaskGroupNotFoundException},
+        status.HTTP_406_NOT_ACCEPTABLE: {"model": UserNotOwnerException},
     },
 )
 async def delete_tasks_group(

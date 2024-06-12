@@ -2,10 +2,15 @@ import logging
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 
 from src.exceptions import NotFoundException
+from src.responses import ValidationException
 from src.auth.service import UserAuthService
 from src.auth.dependencies import get_user_auth_service, get_current_user_from_token
 from src.auth.schemas import CreateUser, ShowUser, Token, LoginForm
-from src.auth.responses import auth_signup_responses, auth_signin_responses
+from src.auth.responses import (
+    UserAlreadyExistsException,
+    SigninException,
+    InvalidLinkException,
+)
 from src.auth.jwt import JwtToken
 from src.util.email_util import email
 
@@ -19,7 +24,10 @@ auth_router = APIRouter(prefix="/auth", tags=["Auth"])
     "/signup",
     status_code=status.HTTP_201_CREATED,
     response_model=ShowUser,
-    responses={**auth_signup_responses},
+    responses={
+        status.HTTP_409_CONFLICT: {"model": UserAlreadyExistsException},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationException},
+    },
 )
 async def create_user(
     new_user: CreateUser,
@@ -36,7 +44,10 @@ async def create_user(
     "/signin",
     status_code=status.HTTP_200_OK,
     response_model=Token,
-    responses={**auth_signin_responses},
+    responses={
+        status.HTTP_401_UNAUTHORIZED: {"model": SigninException},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationException},
+    },
 )
 async def login_for_access_token(
     form_data: LoginForm,
@@ -48,7 +59,12 @@ async def login_for_access_token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@auth_router.get("/verification/{token}")
+@auth_router.get(
+    "/verification/{token}",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": InvalidLinkException},
+    },
+)
 async def email_verivication(
     token: str, user_auth_service: UserAuthService = Depends(get_user_auth_service)
 ):

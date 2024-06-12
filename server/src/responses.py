@@ -1,2 +1,11 @@
-common_validation_response = {422: {"description": "Validation error mesage"}}
-database_response = {500: {"description": "Server error"}}
+from pydantic import BaseModel
+
+
+class ValidationException(BaseModel):
+    code: int = 422
+    detail: str = "Validation error mesage"
+
+
+class InvalidCredentialsException(BaseModel):
+    code: int = 401
+    detail: str = "Could not validate credentials"
