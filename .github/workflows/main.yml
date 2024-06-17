@@ -48,6 +48,7 @@ jobs:
           LOG_LEVEL=${{ vars.LOG_LEVEL }}
           LOG_FILE=${{ vars.LOG_FILE }}
           cd /var/www/html/
+          git clone git@github.com:rtvsk/taskwave.git
           git pull origin main
           git status
           cd taskwave
