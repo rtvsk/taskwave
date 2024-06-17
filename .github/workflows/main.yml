@@ -54,16 +54,3 @@ jobs:
           echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin "$DOCKER_REGISTRY"
           docker compose build -e DB_HOST=$DB_HOST -e DB_PORT=$DB_PORT -e DB_NAME=$DB_NAME -e DB_USER=$DB_USER -e DB_PASSWORD=$DB_PASSWORD -e CLIENT_HOST=$CLIENT_HOST -e CLIENT_PORT=$CLIENT_PORT -e JWT_SECRET_KEY=$JWT_SECRET_KEY -e JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES -e JWT_ALGORITHM=$JWT_ALGORITHM -e SMTP_EMAIL=$SMTP_EMAIL -e SMTP_PASSWORD=$SMTP_PASSWORD -e SMTP_HOST=$SMTP_HOST -e SMTP_PORT=$SMTP_PORT -e REDIS_HOST=$REDIS_HOST -e REDIS_PORT=$REDIS_PORT -e CELERY_BROKER_URL=$CELERY_BROKER_URL -e CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND -e LOG_FORMAT=$LOG_FORMAT -e LOG_LEVEL=$LOG_LEVEL -e LOG_FILE=$LOG_FILE -f ./docker-compose.yaml -t "$DOCKER_LOGIN/taskwave:latest" .
           docker compose -e DB_HOST=$DB_HOST -e DB_PORT=$DB_PORT -e DB_NAME=$DB_NAME -e DB_USER=$DB_USER -e DB_PASSWORD=$DB_PASSWORD -e CLIENT_HOST=$CLIENT_HOST -e CLIENT_PORT=$CLIENT_PORT -e JWT_SECRET_KEY=$JWT_SECRET_KEY -e JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES -e JWT_ALGORITHM=$JWT_ALGORITHM -e SMTP_EMAIL=$SMTP_EMAIL -e SMTP_PASSWORD=$SMTP_PASSWORD -e SMTP_HOST=$SMTP_HOST -e SMTP_PORT=$SMTP_PORT -e REDIS_HOST=$REDIS_HOST -e REDIS_PORT=$REDIS_PORT -e CELERY_BROKER_URL=$CELERY_BROKER_URL -e CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND -e LOG_FORMAT=$LOG_FORMAT -e LOG_LEVEL=$LOG_LEVEL -e LOG_FILE=$LOG_FILE up -d
-          
-          # docker push "$DOCKER_LOGIN/taskwave:latest"
-          # docker stop $(docker ps -q) && docker rm $(docker ps -aq)
-          # sudo fuser -k 3000/tcp
-          # sudo fuser -k 3333/tcp
-          # docker run -d -p 3333:3333 -v nodejs-images-data:/usr/src/app/images "$DOCKER_LOGIN/shaare:latest"
-          # cd /var/www/shaare/webrtc
-          # echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin "$DOCKER_REGISTRY"
-          # docker build -f ./docker-compose.yaml -t "$DOCKER_LOGIN/shaare-webrtc:latest" .
-          # docker push "$DOCKER_LOGIN/shaare-webrtc:latest"
-          # docker stop "$(docker ps -q)"
-          # docker rm "$(docker ps -aq --filter status=exited)"
-          # docker run -d -p 3000:3000 "$DOCKER_LOGIN/shaare-webrtc:latest"
