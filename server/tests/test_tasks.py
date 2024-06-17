@@ -125,3 +125,25 @@ async def test_delete_task(
         f"api/tasks/{tasks_group_from_db.id}/task/{task_from_db.id}", headers=headers
     )
     assert response.status_code == 204
+
+
+@pytest.mark.anyio
+async def test_delete_tasks_group(
+    api_client: AsyncClient, created_test_access_token, get_entity_from_db
+):
+    tasks_group_from_db = await get_entity_from_db(
+        TasksGroup, "title", EDIT_TASKS_GROUP_DATA["title"]
+    )
+    headers = created_test_access_token
+    response = await api_client.delete(
+        f"api/tasks/{tasks_group_from_db.id}", headers=headers
+    )
+    assert response.status_code == 204
+
+
+@pytest.mark.anyio
+async def test_delete_user(api_client: AsyncClient, created_test_access_token):
+
+    headers = created_test_access_token
+    response = await api_client.delete("api/users", headers=headers)
+    assert response.status_code == 200
