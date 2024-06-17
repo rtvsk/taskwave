@@ -102,7 +102,7 @@ class CelerySettings(BaseSettings):
 
 class LoggingSettings(BaseSettings):
 
-    FORMAT: str
+    # FORMAT: str
     LEVEL: str
     FILE: str
     IGNORED_LOGGERS: list[str] = ["passlib", "asyncio"]
@@ -118,7 +118,7 @@ class LoggingSettings(BaseSettings):
                 "version": 1,
                 "disable_existing_loggers": False,
                 "formatters": {
-                    "default": {"format": self.FORMAT, "datefmt": "%Y-%m-%d %H:%M:%S"},
+                    "default": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s", "datefmt": "%Y-%m-%d %H:%M:%S"},
                 },
                 "handlers": {
                     "file": {
