@@ -3,7 +3,9 @@ from typing import Optional
 from uuid import UUID
 from passlib.context import CryptContext
 from sqlalchemy import select, and_
+from sqlalchemy.exc import SQLAlchemyError
 
+from src.exceptions import DatabaseException
 from src.auth.schemas import CreateUser
 from src.users.models import User
 from src.users.schemas import UpdateUser
@@ -29,23 +31,31 @@ class UserService(BaseRepository):
         """
         Retrieve a user by id if user's status `is_active` is `True`.
         """
-        result = await self.session.execute(
-            select(self.model).where(
-                and_(self.model.id == user_id, self.model.is_active)
+        try:
+            result = await self.session.execute(
+                select(self.model).where(
+                    and_(self.model.id == user_id, self.model.is_active)
+                )
             )
-        )
-        return result.scalar_one_or_none()
+            return result.scalar_one_or_none()
+        except SQLAlchemyError as e:
+            logger.error(f"Error get user data by id from the database: {e}")
+            raise DatabaseException
 
     async def get_by_field(self, key: str, value: str) -> Optional[User]:
         """
         Retrieve a user by a specific field if user's status `is_active` is `True`.
         """
-        result = await self.session.execute(
-            select(self.model).where(
-                and_(getattr(self.model, key) == value, self.model.is_active)
+        try:
+            result = await self.session.execute(
+                select(self.model).where(
+                    and_(getattr(self.model, key) == value, self.model.is_active)
+                )
             )
-        )
-        return result.scalar_one_or_none()
+            return result.scalar_one_or_none()
+        except SQLAlchemyError as e:
+            logger.error(f"Error get user data by field from the database: {e}")
+            raise DatabaseException
 
     async def create(self, user_data: CreateUser) -> User:
         """
