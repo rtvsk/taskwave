@@ -12,9 +12,12 @@ class DatabaseSettings(BaseSettings):
     USER: str
     PASSWORD: SecretStr
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="DB_"
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="DB_"
+    # )
+
+    class Config:
+        env_prefix = "DB_"
 
     @property
     def URL(self):
@@ -28,12 +31,15 @@ class ClientSettings(BaseSettings):
     HOST: str
     PORT: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        env_prefix="CLIENT_",
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env",
+    #     env_file_encoding="utf-8",
+    #     extra="ignore",
+    #     env_prefix="CLIENT_",
+    # )
+
+    class Config:
+        env_prefix = "CLIENT_"
 
     @property
     def ORIGIN(self):
@@ -42,12 +48,15 @@ class ClientSettings(BaseSettings):
 
 class TestDatabaseSettings(DatabaseSettings):
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        env_prefix="TEST_DB_",
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env",
+    #     env_file_encoding="utf-8",
+    #     extra="ignore",
+    #     env_prefix="TEST_DB_",
+    # )
+
+    class Config:
+        env_prefix = "TEST_DB_"
 
 
 class JWTSettings(BaseSettings):
@@ -57,9 +66,14 @@ class JWTSettings(BaseSettings):
     SECRET_KEY: SecretStr
     ALGORITHM: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
+    # )
+
+    class Config:
+        env_prefix = "JWT_"
+
+    
 
 
 class SMTPSettings(BaseSettings):
@@ -69,9 +83,11 @@ class SMTPSettings(BaseSettings):
     HOST: str
     PORT: int
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env", env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
+    # )
+    class Config:
+        env_prefix = "SMTP_"
 
 
 class RedisSettings(BaseSettings):
@@ -79,12 +95,15 @@ class RedisSettings(BaseSettings):
     HOST: str
     PORT: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="REDIS_",
-        extra="ignore",
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env",
+    #     env_file_encoding="utf-8",
+    #     env_prefix="REDIS_",
+    #     extra="ignore",
+    # )
+
+    class Config:
+        env_prefix = "REDIS_"
 
 
 class CelerySettings(BaseSettings):
@@ -92,12 +111,14 @@ class CelerySettings(BaseSettings):
     BROKER_URL: str
     RESULT_BACKEND: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="CELERY_",
-        extra="ignore",
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env",
+    #     env_file_encoding="utf-8",
+    #     env_prefix="CELERY_",
+    #     extra="ignore",
+    # )
+    class Config:
+        env_prefix = "CELERY_"
 
 
 class LoggingSettings(BaseSettings):
@@ -108,9 +129,12 @@ class LoggingSettings(BaseSettings):
     IGNORED_LOGGERS: list[str] = ["passlib", "asyncio"]
     IGNORED_LOGGERS_LEVEL: str = "ERROR"
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
-    )
+    # model_config = SettingsConfigDict(
+    #     env_file=".env", env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
+    # )
+
+    class Config:
+        env_prefix = "LOG_"
 
     def configure_logging(self):
         dictConfig(
