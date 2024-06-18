@@ -48,7 +48,9 @@ jobs:
           sudo git checkout main;
           sudo git pull;
           sudo git status;
-          docker compose --file docker-compose.yaml down;
+          docker stop $(docker ps -aq)
+          docker rm $(docker ps -aq)
+          docker rmi $(docker images -aq)
           docker compose --file docker-compose.yaml build;
           echo $(echo $SMTP_PASSWORD)
           echo $(echo $SMTP_HOST)
