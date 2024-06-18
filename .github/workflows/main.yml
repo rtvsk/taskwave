@@ -50,7 +50,7 @@ jobs:
           sudo git status;
           docker compose --file docker-compose.yaml down;
           docker compose --file docker-compose.yaml build;
-          docker compose --file docker-compose.yaml \
+          docker compose \
             -e DOCKER_PASSWORD=$DOCKER_PASSWORD \
             -e DOCKER_LOGIN=$DOCKER_LOGIN \
             -e DOCKER_REGISTRY=$DOCKER_REGISTRY \
@@ -74,6 +74,7 @@ jobs:
             -e CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND \
             -e LOG_LEVEL=$LOG_LEVEL \
             -e LOG_FILE=$LOG_FILE \
+            --file docker-compose.yaml \
             up -d;
           # docker system prune --all --force;
           # cd taskwave
