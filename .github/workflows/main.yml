@@ -50,32 +50,30 @@ jobs:
           sudo git status;
           docker compose --file docker-compose.yaml down;
           docker compose --file docker-compose.yaml build;
-          docker compose \
-            -e DOCKER_PASSWORD=$DOCKER_PASSWORD \
-            -e DOCKER_LOGIN=$DOCKER_LOGIN \
-            -e DOCKER_REGISTRY=$DOCKER_REGISTRY \
-            -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
-            -e SMTP_EMAIL=$SMTP_EMAIL \
-            -e SMTP_PASSWORD=$SMTP_PASSWORD \
-            -e DB_HOST=$DB_HOST \
-            -e DB_PORT=$DB_PORT \
-            -e DB_NAME=$DB_NAME \
-            -e DB_USER=$DB_USER \
-            -e DB_PASSWORD=$DB_PASSWORD \
-            -e CLIENT_HOST=$CLIENT_HOST \
-            -e CLIENT_PORT=$CLIENT_PORT \
-            -e JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES \
-            -e JWT_ALGORITHM=$JWT_ALGORITHM \
-            -e SMTP_HOST=$SMTP_HOST \
-            -e SMTP_PORT=$SMTP_PORT \
-            -e REDIS_HOST=$REDIS_HOST \
-            -e REDIS_PORT=$REDIS_PORT \
-            -e CELERY_BROKER_URL=$CELERY_BROKER_URL \
-            -e CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND \
-            -e LOG_LEVEL=$LOG_LEVEL \
-            -e LOG_FILE=$LOG_FILE \
-            --file docker-compose.yaml \
-            up -d;
+          DOCKER_PASSWORD=$DOCKER_PASSWORD \
+            DOCKER_LOGIN=$DOCKER_LOGIN \
+            DOCKER_REGISTRY=$DOCKER_REGISTRY \
+            JWT_SECRET_KEY=$JWT_SECRET_KEY \
+            SMTP_EMAIL=$SMTP_EMAIL \
+            SMTP_PASSWORD=$SMTP_PASSWORD \
+            DB_HOST=$DB_HOST \
+            DB_PORT=$DB_PORT \
+            DB_NAME=$DB_NAME \
+            DB_USER=$DB_USER \
+            DB_PASSWORD=$DB_PASSWORD \
+            CLIENT_HOST=$CLIENT_HOST \
+            CLIENT_PORT=$CLIENT_PORT \
+            JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES \
+            JWT_ALGORITHM=$JWT_ALGORITHM \
+            SMTP_HOST=$SMTP_HOST \
+            SMTP_PORT=$SMTP_PORT \
+            REDIS_HOST=$REDIS_HOST \
+            REDIS_PORT=$REDIS_PORT \
+            CELERY_BROKER_URL=$CELERY_BROKER_URL \
+            CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND \
+            LOG_LEVEL=$LOG_LEVEL \
+            LOG_FILE=$LOG_FILE \
+            docker compose --file docker-compose.yaml up -d;
           # docker system prune --all --force;
           # cd taskwave
           # echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin "$DOCKER_REGISTRY"
