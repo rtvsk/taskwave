@@ -21,35 +21,37 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: '22'
         script: |
-          DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_LOGIN=${{ secrets.DOCKER_LOGIN }}
-          DOCKER_REGISTRY=${{ vars.DOCKER_REGISTRY }}
-          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-          SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}
-          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-          DB_HOST=${{ vars.DB_HOST }}
-          DB_PORT=${{ vars.DB_PORT }}
-          DB_NAME=${{ vars.DB_NAME }}
-          DB_USER=${{ vars.DB_USER }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          CLIENT_HOST=${{ vars.CLIENT_HOST }}
-          CLIENT_PORT=${{ vars.CLIENT_PORT }}
-          JWT_ACCESS_TOKEN_EXPIRE_MINUTES=${{ vars.JWT_ACCESS_TOKEN_EXPIRE_MINUTES }}
-          JWT_ALGORITHM=${{ vars.JWT_ALGORITHM }}
-          SMTP_HOST=${{ vars.SMTP_HOST }}
-          SMTP_PORT=${{ vars.SMTP_PORT }}
-          REDIS_HOST=${{ vars.REDIS_HOST }}
-          REDIS_PORT=${{ vars.REDIS_PORT }}
-          CELERY_BROKER_URL=${{ vars.CELERY_BROKER_URL }}
-          CELERY_RESULT_BACKEND=${{ vars.CELERY_RESULT_BACKEND }}
-          LOG_LEVEL=${{ vars.LOG_LEVEL }}
-          LOG_FILE=${{ vars.LOG_FILE }}
+          export DOCKER_PASSWORD="${{ secrets.DOCKER_PASSWORD }}"
+          export DOCKER_LOGIN="${{ secrets.DOCKER_LOGIN }}"
+          export DOCKER_REGISTRY="${{ vars.DOCKER_REGISTRY }}"
+          export JWT_SECRET_KEY="${{ secrets.JWT_SECRET_KEY }}"
+          export SMTP_EMAIL="${{ secrets.SMTP_EMAIL }}"
+          export SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}"
+          export DB_HOST="${{ vars.DB_HOST }}"
+          export DB_PORT="${{ vars.DB_PORT }}"
+          export DB_NAME="${{ vars.DB_NAME }}"
+          export DB_USER="${{ vars.DB_USER }}"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export CLIENT_HOST="${{ vars.CLIENT_HOST }}"
+          export CLIENT_PORT="${{ vars.CLIENT_PORT }}"
+          export JWT_ACCESS_TOKEN_EXPIRE_MINUTES="${{ vars.JWT_ACCESS_TOKEN_EXPIRE_MINUTES }}"
+          export JWT_ALGORITHM="${{ vars.JWT_ALGORITHM }}"
+          export SMTP_HOST="${{ vars.SMTP_HOST }}"
+          export SMTP_PORT="${{ vars.SMTP_PORT }}"
+          export REDIS_HOST="${{ vars.REDIS_HOST }}"
+          export REDIS_PORT="${{ vars.REDIS_PORT }}"
+          export CELERY_BROKER_URL="${{ vars.CELERY_BROKER_URL }}"
+          export CELERY_RESULT_BACKEND="${{ vars.CELERY_RESULT_BACKEND }}"
+          export LOG_LEVEL="${{ vars.LOG_LEVEL }}"
+          export LOG_FILE="${{ vars.LOG_FILE }}"
           cd /var/www/html/taskwave;
           sudo git checkout main;
           sudo git pull;
           sudo git status;
           docker compose --file docker-compose.yaml down;
           docker compose --file docker-compose.yaml build;
+          echo $SMTP_PASSWORD
+          echo $SMTP_HOST
           DOCKER_PASSWORD=$DOCKER_PASSWORD \
             DOCKER_LOGIN=$DOCKER_LOGIN \
             DOCKER_REGISTRY=$DOCKER_REGISTRY \
