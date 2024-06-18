@@ -12,30 +12,6 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    env:
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      DOCKER_LOGIN: ${{ secrets.DOCKER_LOGIN }}
-      DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}
-      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-      SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-      DB_HOST: ${{ vars.DB_HOST }}
-      DB_PORT: ${{ vars.DB_PORT }}
-      DB_NAME: ${{ vars.DB_NAME }}
-      DB_USER: ${{ vars.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      CLIENT_HOST: ${{ vars.CLIENT_HOST }}
-      CLIENT_PORT: ${{ vars.CLIENT_PORT }}
-      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${{ vars.JWT_ACCESS_TOKEN_EXPIRE_MINUTES }}
-      JWT_ALGORITHM: ${{ vars.JWT_ALGORITHM }}
-      SMTP_HOST: ${{ vars.SMTP_HOST }}
-      SMTP_PORT: ${{ vars.SMTP_PORT }}
-      REDIS_HOST: ${{ vars.REDIS_HOST }}
-      REDIS_PORT: ${{ vars.REDIS_PORT }}
-      CELERY_BROKER_URL: ${{ vars.CELERY_BROKER_URL }}
-      CELERY_RESULT_BACKEND: ${{ vars.CELERY_RESULT_BACKEND }}
-      LOG_LEVEL: ${{ vars.LOG_LEVEL }}
-      LOG_FILE: ${{ vars.LOG_FILE }}
     steps:
     - name: Deploy using ssh
       uses: appleboy/ssh-action@master
@@ -45,37 +21,61 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: '22'
         script: |
-          # DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}
-          # DOCKER_LOGIN=${{ secrets.DOCKER_LOGIN }}
-          # DOCKER_REGISTRY=${{ vars.DOCKER_REGISTRY }}
-          # JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-          # SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}
-          # SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
-          # DB_HOST=${{ vars.DB_HOST }}
-          # DB_PORT=${{ vars.DB_PORT }}
-          # DB_NAME=${{ vars.DB_NAME }}
-          # DB_USER=${{ vars.DB_USER }}
-          # DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          # CLIENT_HOST=${{ vars.CLIENT_HOST }}
-          # CLIENT_PORT=${{ vars.CLIENT_PORT }}
-          # JWT_ACCESS_TOKEN_EXPIRE_MINUTES=${{ vars.JWT_ACCESS_TOKEN_EXPIRE_MINUTES }}
-          # JWT_ALGORITHM=${{ vars.JWT_ALGORITHM }}
-          # SMTP_HOST=${{ vars.SMTP_HOST }}
-          # SMTP_PORT=${{ vars.SMTP_PORT }}
-          # REDIS_HOST=${{ vars.REDIS_HOST }}
-          # REDIS_PORT=${{ vars.REDIS_PORT }}
-          # CELERY_BROKER_URL=${{ vars.CELERY_BROKER_URL }}
-          # CELERY_RESULT_BACKEND=${{ vars.CELERY_RESULT_BACKEND }}
-          # # LOG_FORMAT=${{ vars.LOG_FORMAT }}
-          # LOG_LEVEL=${{ vars.LOG_LEVEL }}
-          # LOG_FILE=${{ vars.LOG_FILE }}
+          DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_LOGIN=${{ secrets.DOCKER_LOGIN }}
+          DOCKER_REGISTRY=${{ vars.DOCKER_REGISTRY }}
+          JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+          SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+          DB_HOST=${{ vars.DB_HOST }}
+          DB_PORT=${{ vars.DB_PORT }}
+          DB_NAME=${{ vars.DB_NAME }}
+          DB_USER=${{ vars.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          CLIENT_HOST=${{ vars.CLIENT_HOST }}
+          CLIENT_PORT=${{ vars.CLIENT_PORT }}
+          JWT_ACCESS_TOKEN_EXPIRE_MINUTES=${{ vars.JWT_ACCESS_TOKEN_EXPIRE_MINUTES }}
+          JWT_ALGORITHM=${{ vars.JWT_ALGORITHM }}
+          SMTP_HOST=${{ vars.SMTP_HOST }}
+          SMTP_PORT=${{ vars.SMTP_PORT }}
+          REDIS_HOST=${{ vars.REDIS_HOST }}
+          REDIS_PORT=${{ vars.REDIS_PORT }}
+          CELERY_BROKER_URL=${{ vars.CELERY_BROKER_URL }}
+          CELERY_RESULT_BACKEND=${{ vars.CELERY_RESULT_BACKEND }}
+          LOG_LEVEL=${{ vars.LOG_LEVEL }}
+          LOG_FILE=${{ vars.LOG_FILE }}
           cd /var/www/html/taskwave;
-          git checkout main;
-          git pull;
-          git status;
+          sudo git checkout main;
+          sudo git pull;
+          sudo git status;
           docker compose --file docker-compose.yaml down;
-          docker compose --file docker-compose.yaml up -d;
-          docker system prune --all --force;
+          docker compose --file docker-compose.yaml build;
+          docker compose --file docker-compose.yaml \
+            -e DOCKER_PASSWORD=$DOCKER_PASSWORD \
+            -e DOCKER_LOGIN=$DOCKER_LOGIN \
+            -e DOCKER_REGISTRY=$DOCKER_REGISTRY \
+            -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+            -e SMTP_EMAIL=$SMTP_EMAIL \
+            -e SMTP_PASSWORD=$SMTP_PASSWORD \
+            -e DB_HOST=$DB_HOST \
+            -e DB_PORT=$DB_PORT \
+            -e DB_NAME=$DB_NAME \
+            -e DB_USER=$DB_USER \
+            -e DB_PASSWORD=$DB_PASSWORD \
+            -e CLIENT_HOST=$CLIENT_HOST \
+            -e CLIENT_PORT=$CLIENT_PORT \
+            -e JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES \
+            -e JWT_ALGORITHM=$JWT_ALGORITHM \
+            -e SMTP_HOST=$SMTP_HOST \
+            -e SMTP_PORT=$SMTP_PORT \
+            -e REDIS_HOST=$REDIS_HOST \
+            -e REDIS_PORT=$REDIS_PORT \
+            -e CELERY_BROKER_URL=$CELERY_BROKER_URL \
+            -e CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND \
+            -e LOG_LEVEL=$LOG_LEVEL \
+            -e LOG_FILE=$LOG_FILE \
+            up -d;
+          # docker system prune --all --force;
           # cd taskwave
           # echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin "$DOCKER_REGISTRY"
           # docker compose build -e DB_HOST=$DB_HOST -e DB_PORT=$DB_PORT -e DB_NAME=$DB_NAME -e DB_USER=$DB_USER -e DB_PASSWORD=$DB_PASSWORD -e CLIENT_HOST=$CLIENT_HOST -e CLIENT_PORT=$CLIENT_PORT -e JWT_SECRET_KEY=$JWT_SECRET_KEY -e JWT_ACCESS_TOKEN_EXPIRE_MINUTES=$JWT_ACCESS_TOKEN_EXPIRE_MINUTES -e JWT_ALGORITHM=$JWT_ALGORITHM -e SMTP_EMAIL=$SMTP_EMAIL -e SMTP_PASSWORD=$SMTP_PASSWORD -e SMTP_HOST=$SMTP_HOST -e SMTP_PORT=$SMTP_PORT -e REDIS_HOST=$REDIS_HOST -e REDIS_PORT=$REDIS_PORT -e CELERY_BROKER_URL=$CELERY_BROKER_URL -e CELERY_RESULT_BACKEND=$CELERY_RESULT_BACKEND -e LOG_LEVEL=$LOG_LEVEL -e LOG_FILE=$LOG_FILE -f ./docker-compose.yaml -t "$DOCKER_LOGIN/taskwave:latest" .
