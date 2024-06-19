@@ -50,15 +50,16 @@ jobs:
           export TEST_DB_USER="${{ vars.TEST_DB_USER }}"
           export TEST_DB_PASSWORD="${{ vars.TEST_DB_PASSWORD }}"
           cd /var/www/html/taskwave;
-          sudo rm -rf ./server/.venv
           sudo git checkout cloud-deploy;
           sudo git pull;
           sudo git status;
           docker stop $(docker ps -aq)
           docker rm $(docker ps -aq)
-          docker rmi $(docker images -aq)
+          docker rmi -f $(docker images -aq)
           docker volume rm $(docker volume ls -q)
+          docker network rm $(docker network ls -q)
           docker system prune
+          docker builder prune -af
           docker compose --file docker-compose.yaml build --no-cache;
           echo $(echo $SMTP_PASSWORD)
           echo $(echo $SMTP_HOST)
