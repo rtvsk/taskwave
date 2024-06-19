@@ -16,6 +16,7 @@ python-jose = { version = "^3.3.0", extras = ["cryptography"] }
 passlib = { version = "^1.7.4", extras = ["bcrypt"] }
 httpx = "^0.25.2"
 redis = "^4.4.2"
+celery = "^5.2.7"
 pydantic-settings = "^2.2.1"
 pydantic = { version = "^2.5.1", extras = ["email"] }
 

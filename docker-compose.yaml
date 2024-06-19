@@ -46,14 +46,9 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    # command: |
-    #   bash -c "
-    #   poetry run celery -A src.celery_tasks worker --loglevel=info -B --detach &&
-    #   poetry run alembic upgrade head &&
-    #   poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000
-    #   "
     command: |
       bash -c "
+      poetry run celery -A src.celery_tasks worker --loglevel=info -B --detach &&
       poetry run alembic upgrade head &&
       poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000
       "
