@@ -125,8 +125,8 @@ class LoggingSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    smtp: SMTPSettings = SMTPSettings()
     db: DatabaseSettings = DatabaseSettings()
+    smtp: SMTPSettings = SMTPSettings()
     client: ClientSettings = ClientSettings()
     test_db: TestDatabaseSettings = TestDatabaseSettings()
     jwt: JWTSettings = JWTSettings()

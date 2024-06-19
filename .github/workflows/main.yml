@@ -56,7 +56,7 @@ jobs:
           docker stop $(docker ps -aq)
           docker rm $(docker ps -aq)
           docker rmi $(docker images -aq)
-          docker compose --file docker-compose.yaml build;
+          docker compose --file docker-compose.yaml build --no-cache;
           echo $(echo $SMTP_PASSWORD)
           echo $(echo $SMTP_HOST)
           DOCKER_PASSWORD=$DOCKER_PASSWORD \
