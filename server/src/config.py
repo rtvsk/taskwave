@@ -12,9 +12,7 @@ class DatabaseSettings(BaseSettings):
     USER: str
     PASSWORD: SecretStr
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore", env_prefix="DB_"
-    )
+    model_config = SettingsConfigDict(extra="ignore", env_prefix="DB_")
 
     @property
     def URL(self):
@@ -28,12 +26,7 @@ class ClientSettings(BaseSettings):
     HOST: str
     PORT: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        env_prefix="CLIENT_",
-    )
+    model_config = SettingsConfigDict(extra="ignore", env_prefix="CLIENT_")
 
     @property
     def ORIGIN(self):
@@ -42,24 +35,16 @@ class ClientSettings(BaseSettings):
 
 class TestDatabaseSettings(DatabaseSettings):
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        env_prefix="TEST_DB_",
-    )
+    model_config = SettingsConfigDict(extra="ignore", env_prefix="TEST_DB_")
 
 
 class JWTSettings(BaseSettings):
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int
-    REFRESH_TOKEN_EXPIRE_DAYS: int
     SECRET_KEY: SecretStr
     ALGORITHM: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_prefix="JWT_", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="JWT_", extra="ignore")
 
 
 class SMTPSettings(BaseSettings):
@@ -69,9 +54,7 @@ class SMTPSettings(BaseSettings):
     HOST: str
     PORT: int
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_prefix="SMTP_", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="SMTP_", extra="ignore")
 
 
 class RedisSettings(BaseSettings):
@@ -79,12 +62,7 @@ class RedisSettings(BaseSettings):
     HOST: str
     PORT: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="REDIS_",
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(env_prefix="REDIS_", extra="ignore")
 
 
 class CelerySettings(BaseSettings):
@@ -92,25 +70,17 @@ class CelerySettings(BaseSettings):
     BROKER_URL: str
     RESULT_BACKEND: str
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        env_prefix="CELERY_",
-        extra="ignore",
-    )
+    model_config = SettingsConfigDict(env_prefix="CELERY_", extra="ignore")
 
 
 class LoggingSettings(BaseSettings):
 
-    FORMAT: str
     LEVEL: str
     FILE: str
     IGNORED_LOGGERS: list[str] = ["passlib", "asyncio"]
     IGNORED_LOGGERS_LEVEL: str = "ERROR"
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", env_prefix="LOG_", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="LOG_", extra="ignore")
 
     def configure_logging(self):
         dictConfig(
@@ -118,7 +88,10 @@ class LoggingSettings(BaseSettings):
                 "version": 1,
                 "disable_existing_loggers": False,
                 "formatters": {
-                    "default": {"format": self.FORMAT, "datefmt": "%Y-%m-%d %H:%M:%S"},
+                    "default": {
+                        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                        "datefmt": "%Y-%m-%d %H:%M:%S",
+                    },
                 },
                 "handlers": {
                     "file": {
