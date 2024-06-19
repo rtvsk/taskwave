@@ -50,7 +50,7 @@ jobs:
           export TEST_DB_USER="${{ vars.TEST_DB_USER }}"
           export TEST_DB_PASSWORD="${{ vars.TEST_DB_PASSWORD }}"
           cd /var/www/html/taskwave;
-          sudo git checkout main;
+          sudo git checkout cloud-deploy;
           sudo git pull;
           sudo git status;
           docker stop $(docker ps -aq)
