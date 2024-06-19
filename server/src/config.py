@@ -70,12 +70,12 @@ class RedisSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="REDIS_", extra="ignore")
 
 
-class CelerySettings(BaseSettings):
+# class CelerySettings(BaseSettings):
 
-    BROKER_URL: str
-    RESULT_BACKEND: str
+#     BROKER_URL: str
+#     RESULT_BACKEND: str
 
-    model_config = SettingsConfigDict(env_prefix="CELERY_", extra="ignore")
+#     model_config = SettingsConfigDict(env_prefix="CELERY_", extra="ignore")
 
 
 class LoggingSettings(BaseSettings):
@@ -131,7 +131,7 @@ class Settings(BaseSettings):
     test_db: TestDatabaseSettings = TestDatabaseSettings()
     jwt: JWTSettings = JWTSettings()
     redis: RedisSettings = RedisSettings()
-    celery: CelerySettings = CelerySettings()
+    # celery: CelerySettings = CelerySettings()
     log: LoggingSettings = LoggingSettings()
 
 
