@@ -1,7 +1,10 @@
 import logging
 from logging.config import dictConfig
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
+
+load_dotenv()
 
 
 class DatabaseSettings(BaseSettings):
