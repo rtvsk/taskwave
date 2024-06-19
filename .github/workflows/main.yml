@@ -52,6 +52,7 @@ jobs:
           cd /var/www/html;
           sudo rm -rf taskwave;
           sudo sh clone.sh
+          cd taskwave;
           sudo git checkout cloud-deploy;
           sudo git status;
           docker stop $(docker ps -aq)
