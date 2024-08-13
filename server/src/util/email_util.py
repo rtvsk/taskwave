@@ -85,7 +85,7 @@ class Email:
         """
         Send a reminder email to a user.
 
-        :param recipient: user to send the reminder email to.
+        :param recipient:  user to send the reminder email to.
         :param name: name of the task or tasks to remind the user about.
         """
         subject = "Test"
