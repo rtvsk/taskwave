@@ -55,7 +55,7 @@ poetry config virtualenvs.in-project true
 Загрузите зависимости.
 
 ```bash
-poetry install 
+poetry install
 ```
 
 Запустите оболочку с активированным виртуальным окружением.
