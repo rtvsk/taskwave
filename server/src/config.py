@@ -33,7 +33,7 @@ class ClientSettings(BaseSettings):
 
     @property
     def ORIGIN(self):
-        return f"http://{self.HOST}:{self.PORT}"
+        return f"{self.HOST}:{self.PORT}"
 
 
 class TestDatabaseSettings(DatabaseSettings):
@@ -48,8 +48,6 @@ class JWTSettings(BaseSettings):
     ALGORITHM: str
 
     model_config = SettingsConfigDict(env_prefix="JWT_", extra="ignore")
-
-    
 
 
 class SMTPSettings(BaseSettings):
