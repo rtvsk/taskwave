@@ -39,11 +39,21 @@ function Copyright(props: any) {
 
 export const SignUp = () => {
     const history = useHistory();
+    const [passportRepeatError, setPassportRepeatError] = React.useState(false);
 
     const handleSubmit = React.useCallback(
         async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             const data = new FormData(event.currentTarget);
+
+            if (data.get('repeatPassword') !== data.get('password')) {
+                setPassportRepeatError(true);
+
+                return;
+            }
+
+            setPassportRepeatError(false);
+
             const signinData = {
                 login: data.get('login'),
                 password: data.get('password'),
@@ -105,7 +115,7 @@ export const SignUp = () => {
                             id='login'
                             label='Login'
                             name='login'
-                            autoComplete='login'
+                            // autoComplete='login'
                         />
                         <TextField
                             margin='normal'
@@ -114,7 +124,7 @@ export const SignUp = () => {
                             id='email'
                             label='Email Address'
                             name='email'
-                            autoComplete='email'
+                            // autoComplete='email'
                         />
                         <TextField
                             margin='normal'
@@ -124,7 +134,18 @@ export const SignUp = () => {
                             label='Password'
                             type='password'
                             id='password'
-                            autoComplete='current-password'
+                            // autoComplete='current-password'
+                        />
+                        <TextField
+                            margin='normal'
+                            required
+                            fullWidth
+                            name='repeatPassword'
+                            label='Repeat Password'
+                            type='password'
+                            id='repeatPassword'
+                            error={passportRepeatError}
+                            // autoComplete='current-password'
                         />
                         <FormControlLabel
                             control={
@@ -141,19 +162,15 @@ export const SignUp = () => {
                             Зарегистрироваться
                         </Button>
                         <Grid container>
-                            <Grid item xs>
-                                <Link href='#' variant='body2'>
-                                    Забыли пароль?
-                                </Link>
-                            </Grid>
+                            <Grid item xs></Grid>
                             <Grid item>
                                 <Link
-                                    href='/sign-up'
+                                    href='/sign-in'
                                     variant='body2'
                                     component={LinkBehavior}
                                     onClick={() => {}}
                                 >
-                                    {'Зарегистрироваться'}
+                                    {'Войти'}
                                 </Link>
                             </Grid>
                         </Grid>

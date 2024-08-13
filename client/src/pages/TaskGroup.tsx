@@ -3,7 +3,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Box, Typography, IconButton, Divider } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ITaskGroup } from '../slices/taskGroup/taskGroupSlice';
 import { deleteTaskGroup } from '../actions/taskGroups/deleteTaskGroup';
@@ -12,6 +12,7 @@ import { convertDateYMDtoDMY } from '../helpers/helpers';
 import { modalActions } from '../slices/modal/modalSlice';
 import { AppDispatch } from '../store';
 import { fetchTasksByTaskGroupId } from '../actions/task/fetchTasks';
+import { tasksByTaskGroupIdSelector } from '../slices/task/selectors';
 
 import { Task } from './Task';
 
@@ -20,11 +21,25 @@ export const TaskGroup = (taskGroupProps: ITaskGroup) => {
     const dispatch = useDispatch() as AppDispatch;
     const [isOpen, setIsOpen] = useState(false);
 
+    const allTasksByGroupId = tasksByTaskGroupIdSelector(taskGroupId);
+    const allTasksOfThisTaskGroup = useSelector((state) =>
+        // @ts-expect-error asd asd asd
+        allTasksByGroupId(state)
+    );
+
+    const areDoneAllTasks = allTasksOfThisTaskGroup.every(
+        (task) => task.is_done
+    );
+
     const toggleOpen = () => setIsOpen((prev) => !prev);
 
     useEffect(() => {
         taskGroupId && dispatch(fetchTasksByTaskGroupId(taskGroupId));
     }, [taskGroupId]);
+
+    const taskgroupStyle = areDoneAllTasks
+        ? { textDecoration: 'line-through' }
+        : {};
 
     return (
         <Fragment key={taskGroupId}>
@@ -38,11 +53,19 @@ export const TaskGroup = (taskGroupProps: ITaskGroup) => {
                     style={{ cursor: 'pointer', width: '100%' }}
                     onClick={toggleOpen}
                 >
-                    <Typography variant='h6' color='text.primary' align='left'>
+                    <Typography
+                        variant='h6'
+                        color='text.primary'
+                        align='left'
+                        style={taskgroupStyle}
+                    >
                         {title}
                     </Typography>
                     {description && (
-                        <Typography color='text.secondary'>
+                        <Typography
+                            color='text.secondary'
+                            style={taskgroupStyle}
+                        >
                             {description}
                         </Typography>
                     )}

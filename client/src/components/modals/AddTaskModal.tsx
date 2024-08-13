@@ -12,12 +12,14 @@ import {
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 import { modalSelector } from '../../slices/modal/selectors';
 import { AppDispatch } from '../../store';
 import { addTaskModalName } from '../../constants/constants';
 import { modalActions } from '../../slices/modal/modalSlice';
 import { addTask } from '../../actions/task/addTask';
+import { taskGroupsSelector } from '../../slices/taskGroup/selectors';
 
 export const AddTaskModal = memo(() => {
     const dispatch = useDispatch<AppDispatch>();
@@ -28,6 +30,9 @@ export const AddTaskModal = memo(() => {
     const handleCloseModal = () => dispatch(modalActions.reset());
 
     const taskGroupId = modalData.data?.taskGroupId;
+    const taskGroup = useSelector(taskGroupsSelector).find(
+        (tg) => tg.id === taskGroupId
+    );
 
     return (
         <Dialog
@@ -86,6 +91,7 @@ export const AddTaskModal = memo(() => {
                             // @ts-expect-error asdasd
                             setDeadline(value?.format('YYYY-MM-DD'))
                         }
+                        maxDate={dayjs(taskGroup?.deadline)}
                     />
                 </LocalizationProvider>
             </DialogContent>

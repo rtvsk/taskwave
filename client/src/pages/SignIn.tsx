@@ -115,9 +115,7 @@ export const SignIn = () => {
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href='#' variant='body2'>
-                                    Забыли пароль?
-                                </Link>
+                                <Link href='#' variant='body2'></Link>
                             </Grid>
                             <Grid item>
                                 <Link

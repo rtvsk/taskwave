@@ -13,7 +13,7 @@ import { modalActions } from '../../slices/modal/modalSlice';
 export const editTask = createAsyncThunk<void, WithTaskGroupId<ITask>>(
     'task/editTask',
     async (
-        { id, taskGroupId, title, description = '', deadline },
+        { id, taskGroupId, title, description = '', deadline, is_done },
         thunkApi
     ): Promise<void> => {
         const { dispatch } = thunkApi;
@@ -27,7 +27,7 @@ export const editTask = createAsyncThunk<void, WithTaskGroupId<ITask>>(
 
             const { data } = await api.patch<Omit<ITask, 'taskGroupId'>>(
                 `/api/tasks/${taskGroupId}/task/${id}`,
-                { title, description, deadline },
+                { title, description, deadline, is_done },
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
