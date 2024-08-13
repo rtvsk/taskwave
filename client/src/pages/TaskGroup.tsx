@@ -27,9 +27,9 @@ export const TaskGroup = (taskGroupProps: ITaskGroup) => {
         allTasksByGroupId(state)
     );
 
-    const areDoneAllTasks = allTasksOfThisTaskGroup.every(
-        (task) => task.is_done
-    );
+    const areDoneAllTasks =
+        !!allTasksOfThisTaskGroup.length &&
+        allTasksOfThisTaskGroup.every((task) => task.is_done);
 
     const toggleOpen = () => setIsOpen((prev) => !prev);
 
