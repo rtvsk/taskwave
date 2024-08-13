@@ -12,6 +12,7 @@ import { Spinner } from './components/spinner/Spinner';
 import { globalIsLoadingSelector } from './slices/global/selectors';
 import { useInitial } from './hooks/useInitial';
 import { TaskGroupModals } from './components/modals';
+import { Verification } from './pages/Verification';
 
 export const App = withRouter(() => {
     const isLoading = useSelector(globalIsLoadingSelector);
@@ -26,6 +27,9 @@ export const App = withRouter(() => {
         <React.Fragment>
             <Header />
             <Switch>
+                <Route path='/verification/:token'>
+                    <Verification />
+                </Route>
                 <Route path='/sign-in'>
                     <SignIn />
                 </Route>
